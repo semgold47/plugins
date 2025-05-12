@@ -1,15 +1,9 @@
-"use strict";
-
-// Проверяем, не были ли плагины уже загружены
-if (window.lampa_listener_extensions && window.imdb_vote_plugin) {
-  // Если плагины уже загружены, просто выходим из функции
-  console.log("Плагины уже загружены.");
-} else {
+(function () {
+  "use strict";
   function initCardListener() {
     // Модифицируем Card.prototype только если это еще не сделано
     if (!window.lampa_listener_extensions) {
       window.lampa_listener_extensions = true;
-
       Object.defineProperty(window.Lampa.Card.prototype, "build", {
         get: function () {
           return this._build;
@@ -29,7 +23,6 @@ if (window.lampa_listener_extensions && window.imdb_vote_plugin) {
     // Добавляем обработчик рейтинга IMDb или КиноПоиск
     if (!window.imdb_vote_plugin) {
       window.imdb_vote_plugin = true;
-
       Lampa.Listener.follow("card", function (event) {
         if (event.type === "build") {
           const voteElement = $(".card__vote", event.object.card);
@@ -89,7 +82,7 @@ if (window.lampa_listener_extensions && window.imdb_vote_plugin) {
 
   Lampa.SettingsApi.addComponent({
     component: "rating_choice",
-    name: "Рейтинг",
+    name: "Рейтинг на карточке",
     icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" class="rating-star">
     <path d="M12 2L14.5 8.5L21 9L16 13L17.5 20L12 16.5L6.5 20L8 13L3 9L9.5 8.5L12 2Z" stroke="currentColor" stroke-width="2"/>
   </svg>
@@ -109,50 +102,29 @@ if (window.lampa_listener_extensions && window.imdb_vote_plugin) {
   Lampa.SettingsApi.addParam({
     component: "rating_choice",
     param: {
-      type: "button",
+      name: "rating_source",
+      type: "select",
+      values: {
+        tmdb: "TMDb (белый цвет)",
+        imdb: "IMDb (синий)",
+        kp: "КиноПоиск (желный)",
+      },
+      default: "tmdb",
     },
     field: {
-      name: "Рейтинг TMDb",
+      name: "Источник рейтинга",
+      description:
+        "Выберите предпочитаемый источник рейтингов для отображения на карточке фильма/сериала",
     },
-    onChange: function () {
-      // Отключаем IMDb и КиноПоиск
-      Lampa.Storage.set("use_imdb_rating", false);
-      Lampa.Storage.set("use_kp_rating", false);
-      Lampa.Noty.show("Выбран рейтинг TMDb");
-    },
-  });
+    onChange: function (value) {
+      // Устанавливаем соответствующий рейтинг в зависимости от выбора
+      Lampa.Storage.set("use_imdb_rating", value === "imdb");
+      Lampa.Storage.set("use_kp_rating", value === "kp");
 
-  // Кнопка для выбора "Рейтинг КиноПоиск"
-  Lampa.SettingsApi.addParam({
-    component: "rating_choice",
-    param: {
-      type: "button",
-    },
-    field: {
-      name: "Рейтинг КиноПоиск",
-    },
-    onChange: function () {
-      // Отключаем IMDb и включаем КиноПоиск
-      Lampa.Storage.set("use_imdb_rating", false);
-      Lampa.Storage.set("use_kp_rating", true);
-      Lampa.Noty.show("Выбран рейтинг КиноПоиск");
+      let message =
+        "Выбран рейтинг " +
+        (value === "tmdb" ? "TMDb" : value === "imdb" ? "IMDb" : "КиноПоиск");
+      Lampa.Noty.show(message);
     },
   });
-
-  // Кнопка для выбора "Рейтинг IMDb"
-  Lampa.SettingsApi.addParam({
-    component: "rating_choice",
-    param: {
-      type: "button",
-    },
-    field: {
-      name: "Рейтинг IMDb",
-    },
-    onChange: function () {
-      // Включаем IMDb и отключаем КиноПоиск
-      Lampa.Storage.set("use_imdb_rating", true);
-      Lampa.Storage.set("use_kp_rating", false);
-      Lampa.Noty.show("Выбран рейтинг IMDb");
-    },
-  });
-}
+})();
