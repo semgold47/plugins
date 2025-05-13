@@ -1,8 +1,7 @@
-//МОЙ Последний, Рабочий, с vps
 (function () {
   "use strict";
 
-  const DEFAULT_API_KEY = "941fa32cfc1144b1a1e213238242812" || {};
+  const DEFAULT_API_KEY = "" || {};
   const WEATHER_CACHE_KEY = "weatherData";
   const CACHE_EXPIRATION_MS = 6 * 60 * 60 * 1000;
   const CACHE_REFRESH_MS = 60 * 60 * 1000;
