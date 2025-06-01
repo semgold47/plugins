@@ -661,13 +661,6 @@
       setupModalHandlers();
     });
 
-    function interpolateColor(from, to, progress) {
-      var rgb = from.map(function (start, idx) {
-        return Math.round(start + (to[idx] - start) * progress);
-      });
-      return "rgb(" + rgb.join(",") + ")";
-    }
-
     function applyHourlyBackgrounds(
       currentHour,
       sunrise,
