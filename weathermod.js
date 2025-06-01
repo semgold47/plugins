@@ -246,7 +246,6 @@
                 <div class="navigation-tabs" style="margin: 5px 0;">
                   <div class="navigation-tabs__button selector active" data-tab="current">Текущая</div>
                   <div class="navigation-tabs__split">|</div>
-                  <div class="navigation-tabs__split">|</div>
                   <div class="navigation-tabs__button selector" data-tab="details">День</div>
                   <div class="navigation-tabs__split">|</div>
                   <div class="navigation-tabs__button selector" data-tab="tomorrow">На завтра</div>
