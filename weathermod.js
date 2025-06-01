@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const DEFAULT_API_KEY = {} || "";
+  const DEFAULT_API_KEY = "";
   const WEATHER_CACHE_KEY = "weatherData";
   const CACHE_EXPIRATION_MS = 6 * 60 * 60 * 1000;
   const CACHE_REFRESH_MS = 60 * 60 * 1000;
@@ -21,14 +21,7 @@
     var API_UPDATE_INTERVAL = 6 * 60 * 60 * 1000;
     var lastUpdateHour = -1;
 
-    this.create = function () {
-      createWeatherWidget();
-      createModal();
-      setupSettings();
-      $(".head__actions").append(html);
-      html.hide();
-      this.getWeather();
-    };
+  
 
     function convertTo24HourFormat(time) {
       var match = /\d+:\d+\s*(AM|PM)/i.exec(time);
@@ -351,7 +344,6 @@
       }
 
       $("#weather-modal-city").text(`Погода в ${location.name}`);
-      $("#weather-current-title").text(`Погода в ${location.name}`);
       $("#weather-update-time").text(`Обновлено: ${current.last_updated}`);
       $("#weather-icon-big").html(
         `<img style="width: 100%; height: 100%; object-fit: contain; display: block;" 
