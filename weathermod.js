@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const DEFAULT_API_KEY = "";
+  const DEFAULT_API_KEY = "62e890ca6e044d4b937144001251005";
   const WEATHER_CACHE_KEY = "weatherData";
   const CACHE_EXPIRATION_MS = 6 * 60 * 60 * 1000;
   const CACHE_REFRESH_MS = 60 * 60 * 1000;
@@ -9,7 +9,7 @@
 
   var API_KEY = localStorage.getItem("weatherApiKey") || DEFAULT_API_KEY;
   var network = new Lampa.Reguest();
-  var storedLocation = localStorage.getItem("weatherLocation") || "Москва";
+  var storedLocation = localStorage.getItem("weatherLocation") || "Санкт-Петербург";
   var city = storedLocation;
   var html,
     modalHtml,
