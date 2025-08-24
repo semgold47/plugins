@@ -388,7 +388,7 @@
         <div class="weather-data-row" style="
           display: flex;
           border-radius: 5px;
-          margin: 0;
+          margin: 2px;
           justify-content: space-between;
           padding: 0 5px;
           font-size: 1.1em;
@@ -1017,3 +1017,4 @@
     }, 3000);
   });
 })();
+
