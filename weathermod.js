@@ -1,15 +1,16 @@
 (function () {
   "use strict";
 
-  const DEFAULT_API_KEY = "62e890ca6e044d4b937144001251005";
+  const DEFAULT_API_KEY = "62e890ca6e044d4b937144001251005" || {};
   const WEATHER_CACHE_KEY = "weatherData";
   const CACHE_EXPIRATION_MS = 6 * 60 * 60 * 1000;
   const CACHE_REFRESH_MS = 60 * 60 * 1000;
-  const FORECAST_HOURS = 8;
+  const FORECAST_HOURS = 10;
 
   var API_KEY = localStorage.getItem("weatherApiKey") || DEFAULT_API_KEY;
   var network = new Lampa.Reguest();
-  var storedLocation = localStorage.getItem("weatherLocation") || "Санкт-Петербург";
+  var storedLocation =
+    localStorage.getItem("weatherLocation") || "Санкт-Петербург";
   var city = storedLocation;
   var html,
     modalHtml,
@@ -21,7 +22,14 @@
     var API_UPDATE_INTERVAL = 6 * 60 * 60 * 1000;
     var lastUpdateHour = -1;
 
-  
+    this.create = function () {
+      createWeatherWidget();
+      createModal();
+      setupSettings();
+      $(".head__actions").append(html);
+      html.hide();
+      this.getWeather();
+    };
 
     function convertTo24HourFormat(time) {
       var match = /\d+:\d+\s*(AM|PM)/i.exec(time);
@@ -71,7 +79,11 @@
 
     function getWeatherUrl(city) {
       return (
-        "https://api.weatherapi.com/v1/forecast.json?key=" + API_KEY + "&q=" + city + "&days=7&lang=ru"
+        "https://api.weatherapi.com/v1/forecast.json?key=" +
+        API_KEY +
+        "&q=" +
+        city +
+        "&days=7&lang=ru"
       );
     }
 
@@ -223,34 +235,38 @@
     function createModal() {
       if (modalHtml) return modalHtml;
 
+      // Создаем backdrop отдельным элементом
+      //const backdrop = $('<div class="modal__backdrop" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000;"></div>');
+
       modalHtml = $(`
-    <div class="modal modal--large animate weather-modal" data-nav="modal" style="display: none;" tabindex="0">  
-      <div class="modal__content" data-nav="modal" style="z-index: 1001; overflow: auto;">
+    <div class="modal--large animate weather-modal" data-nav="modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1001;width: 100%;height: 100%; padding: 50px;" tabindex="0">  
+      <div class="modal__content" style="max-height: 90vh; overflow: hidden;">
         <div class="modal__head" style="margin-bottom: 5px;">
           <div class="modal__title" id="weather-modal-city" style="font-size: 1.4em; text-align: center; font-weight: 900;">Погода</div>
         </div>                    
-        <div class="modal__body" style="max-height: 99%;">
-          <div class="scroll scroll--over" style="max-height: 97%; overflow: auto;">
-            <div class="scroll__content" style="padding: 0; max-height: 96%;">
-              <div class="scroll__body" style="transform: translate3d(0px, 0px, 0px);">
+        <div class="modal__body" style="max-height: 70vh;">
+          <div class="scroll scroll--over" style="max-height: 100%;">
+            <div class="scroll__content" style="padding: 0;">
+              <div class="scroll__body">
 
-                <div id="hourly-forecast" class="scroll__body full-episodes" style="display: flex; gap: 10px; overflow: auto; padding: 5px 2px; justify-content: space-between;"></div>
+                <div id="hourly-forecast" class="full-episodes" style="display: flex; gap: 10px; overflow: auto; padding: 5px 2px; justify-content: space-between;"></div>
 
-                <div class="navigation-tabs" style="margin: 5px 0;">
+                                <div class="navigation-tabs" style="margin: 5px 0;">
                   <div class="navigation-tabs__button selector active" data-tab="current">Текущая</div>
                   <div class="navigation-tabs__split">|</div>
-                  <div class="navigation-tabs__button selector" data-tab="details">День</div>
+                  <div class="navigation-tabs__button selector" data-tab="hourly">Следующий час</div>
                   <div class="navigation-tabs__split">|</div>
-                  <div class="navigation-tabs__button selector" data-tab="tomorrow">На завтра</div>
+                  <div class="navigation-tabs__button selector" data-tab="details">День</div>
                 </div>   
 
-                <div style="width: 100%; text-align: center; display: flex; align-items: center; flex-direction: column; gap: 20px;">
+                <div style="width: 100%; text-align: center; display: flex; flex-direction: column; gap: 20px;">
                   <!-- Текущая погода -->
                   <div class="weather-tab selector" data-tab-content="current" style="width: 100%; display: flex; flex-direction: row; align-items: center; padding: 10px; border-radius: 16px; background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); box-shadow: 0 4px 16px rgba(0,0,0,0.3); gap: 20px;">
                     <div style="flex-shrink: 0; text-align: center;">
                       <div id="weather-icon-big" style=""></div>
                     </div>
                     <div style="flex: 1;">
+                     
                       <div style="overflow-y: auto; font-size: 1em; line-height: 1.4;">
                         <div id="weather-current-details"></div>
                         <div id="weather-update-time" style="margin-top: 10px; font-style: italic; color: #aaa;"></div>
@@ -258,20 +274,24 @@
                     </div>
                   </div>
 
-                  <!-- Прогноз на завтра -->
-                  <div class="weather-tab selector" data-tab-content="tomorrow" style="width: 100%; display: none; flex-direction: column; padding: 10px; border-radius: 16px; background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); box-shadow: 0 4px 16px rgba(0,0,0,0.3);">
-                    <div style="font-size: 1em; line-height: 1.5;">
-                      <div id="next-day-forecast"></div>
+                  <!-- Почасовой прогноз -->
+                  <div class="weather-tab selector" data-tab-content="hourly" style="width: 100%; display: none; flex-direction: column; padding: 10px; border-radius: 16px; background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); box-shadow: 0 4px 16px rgba(0,0,0,0.3);">
+                    
+                    <div style="overflow-x: auto;">
+                      <div id="hourly-forecast2" style="font-size: 1em; line-height: 1.5;"></div>
                     </div>
                   </div>
 
                   <!-- Подробный прогноз -->
-                  <div class="weather-tab selector" data-tab-content="details" style="width: 100%; display: none; flex-direction: column; padding: 10px; border-radius: 16px; background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); box-shadow: 0 4px 16px rgba(0,0,0,0.3);">                    
+                  <div class="weather-tab selector" data-tab-content="details" style="width: 100%; display: none; flex-direction: column; padding: 10px; border-radius: 16px; background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); box-shadow: 0 4px 16px rgba(0,0,0,0.3);">
+                    
                     <div style="font-size: 1em; line-height: 1.5;">
                       <div id="weather-details-content"></div>
                     </div>
                   </div>
                 </div>
+
+             
               </div>
             </div>
           </div>
@@ -279,12 +299,16 @@
       </div>
     </div>
   `);
-
       modalHtml.prepend(`
-    <div class="modal__backdrop" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999;"></div>
+   <div class="modal__backdrop" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5);"></div>
   `);
-
+      // Добавляем оба элемента в body
+      //  $("body").append(backdrop);
       $("body").append(modalHtml);
+
+      // Связываем backdrop с модальным окном
+      //modalHtml.backdrop = backdrop;
+
       return modalHtml;
     }
     function getCurrentHourForecast(data) {
@@ -315,14 +339,26 @@
       }
       return hourData || forecastHours[0]; // fallback
     }
-
+    function getNextHourForecast(data) {
+      if (!data?.forecast?.forecastday?.length) return null;
+      const now = new Date();
+      const forecastHours = data.forecast.forecastday[0].hour;
+      const nextHour = (now.getHours() + 1) % 24;
+      const dateStr = `${now.getFullYear()}-${String(
+        now.getMonth() + 1
+      ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      const targetTime = `${dateStr} ${String(nextHour).padStart(2, "0")}:00`;
+      let hourData = forecastHours.find((h) => h.time === targetTime);
+      // fallback: если следующего часа нет — берём первый
+      return hourData || forecastHours[0];
+    }
+    // В обработчике событий
     function updateModalData() {
       if (!modalHtml) return;
       if (!modalHtml) createModal();
-
       const location = weatherData.weather?.location;
       const forecastHourCurrent = getCurrentHourForecast(weatherData.weather);
-    
+      const forecastHourNext = getNextHourForecast(weatherData.weather);
       const current = {
         ...forecastHourCurrent,
         condition: forecastHourCurrent.condition,
@@ -331,10 +367,6 @@
       };
 
       const forecast = weatherData.weather?.forecast?.forecastday?.[0];
-      const forecastTomorrow = weatherData.weather?.forecast?.forecastday?.[1];
-      const day = forecastTomorrow.day;
-      const condition = day.condition.text;
-      const icon = day.condition.icon;
       if (!location || !current || !forecast) {
         console.error(
           "Не удалось получить данные для модального окна",
@@ -344,125 +376,126 @@
       }
 
       $("#weather-modal-city").text(`Погода в ${location.name}`);
+      $("#weather-current-title").text(`Погода в ${location.name}`);
       $("#weather-update-time").text(`Обновлено: ${current.last_updated}`);
       $("#weather-icon-big").html(
         `<img style="width: 100%; height: 100%; object-fit: contain; display: block;" 
-         src="https:${current.condition.icon}" 
-         alt="${current.condition.text}">`
+             src="https:${current.condition.icon}" 
+             alt="${current.condition.text}">`
       );
 
       const createRow = (label, value) => `
-    <div class="weather-data-row" style="
-      display: flex;
-      border-radius: 5px;
-      margin: 0;
-      justify-content: space-between;
-      padding: 0 5px;
-      font-size: 1.1em;
-      line-height: 1.2;
-    ">
-      <span class="weather-data-label" style="
-        flex: 1;
-        text-align: left;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;">
-        ${label}:
-      </span>
-      <span class="weather-data-value" style="
-        flex: 1;
-        text-align: right;
-        white-space: nowrap;">
-        ${value}
-      </span>
-    </div>`;
+        <div class="weather-data-row" style="
+          display: flex;
+          border-radius: 5px;
+          margin: 0;
+          justify-content: space-between;
+          padding: 0 5px;
+          font-size: 1.1em;
+          line-height: 1.2;
+          background-color: #f0ffff42;
+          >
+          
+          <span class="weather-data-label" style="
+            flex: 1;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;">
+            ${label}:
+          </span>
+          
+          <span class="weather-data-value" style="
+            flex: 1;
+            text-align: right;
+            white-space: nowrap;">
+            ${value}
+          </span>
+        </div>`;
 
       // Текущая погода
       $("#weather-current-details").html(`
-    ${createRow("Условия", current.condition.text)}
-    ${createRow("Температура", `${current.temp_c}°C`)}
-    ${createRow("Ощущается как", `${current.feelslike_c}°C`)}
-    ${createRow(
-      "Ветер",
-      `${current.wind_kph} км/ч, ${translateWindDirection(current.wind_dir)}`
-    )}
-    ${createRow("Порывы ветра", `${current.gust_kph} км/ч`)}
-    ${createRow("Облачность", `${current.cloud}%`)}
-    ${createRow("Шанс дождя сегодня", `${forecast.day.daily_chance_of_rain}%`)}
-    ${createRow("Влажность", `${current.humidity}%`)}
-    ${createRow("Давление", `${current.pressure_mb} гПа`)}
-    ${createRow("Видимость", `${current.vis_km} км`)}
-    ${createRow("Точка росы", `${current.dewpoint_c ?? "–"}°C`)}
-    ${createRow("УФ-индекс", `${current.uv}`)}
-  `);
+        ${createRow("Условия", current.condition.text)}
+        ${createRow("Температура", `${current.temp_c}°C`)}
+        ${createRow("Ощущается как", `${current.feelslike_c}°C`)}
+        ${createRow(
+          "Ветер",
+          current.wind_kph +
+            " км/ч, " +
+            translateWindDirection(current.wind_dir)
+        )}
+        ${createRow("Порывы ветра", `${current.gust_kph} км/ч`)}
+        ${createRow("Облачность", `${current.cloud}%`)}
+        ${createRow(
+          "Шанс дождя сегодня",
+          `${forecast.day.daily_chance_of_rain}%`
+        )}
+        ${createRow("Влажность", `${current.humidity}%`)}
+        ${createRow("Давление", `${current.pressure_mb} гПа`)}
+        ${createRow("Видимость", `${current.vis_km} км`)}
+        ${createRow("Точка росы", `${current.dewpoint_c ?? "–"}°C`)}
+        ${createRow("УФ-индекс", `${current.uv}`)}
+      `);
+
+      // Следующий час
+      $("#hourly-forecast2").html(`
+        ${createRow("Погода в", forecastHourNext.time.split(" ")[1], " часов")}
+        ${createRow("Условия", forecastHourNext.condition.text)}
+        ${createRow("Температура", `${forecastHourNext.temp_c}°C`)}
+        ${createRow("Ощущается как", `${forecastHourNext.feelslike_c}°C`)}
+       
+         ${createRow(
+           "Ветер",
+           forecastHourNext.wind_kph +
+             " км/ч, " +
+             translateWindDirection(forecastHourNext.wind_dir)
+         )}
+        ${createRow("Порывы ветра", `${forecastHourNext.gust_kph} км/ч`)}
+        ${createRow("Облачность", `${forecastHourNext.cloud}%`)}
+        ${createRow(
+          "Шанс дождя сегодня",
+          `${forecast.day.daily_chance_of_rain}%`
+        )}
+        ${createRow("Влажность", `${forecastHourNext.humidity}%`)}
+        ${createRow("Давление", `${forecastHourNext.pressure_mb} гПа`)}
+        ${createRow("Видимость", `${forecastHourNext.vis_km} км`)}
+        ${createRow("Точка росы", `${forecastHourNext.dewpoint_c ?? "–"}°C`)}
+        ${createRow("УФ-индекс", `${forecastHourNext.uv}`)}
+      `);
 
       // Почасовой прогноз
       updateHourlyForecast(forecast, forecast.astro);
 
-      // Подробности на сегодня
+      // Подробности
       $("#weather-details-content").html(`
-    <div style="margin-bottom: 5px;">
-      <h3 style="margin: 0 0 5px 0; font-size: 1em;">Прогноз на день</h3>
-      ${createRow("Макс. температура", `${forecast.day.maxtemp_c}°C`)}
-      ${createRow("Мин. температура", `${forecast.day.mintemp_c}°C`)}
-      ${createRow("Средняя температура", `${forecast.day.avgtemp_c}°C`)}
-      ${createRow("Макс. ветер", `${forecast.day.maxwind_kph} км/ч`)}
-      ${createRow("Осадки", `${forecast.day.totalprecip_mm} мм`)}
-      ${createRow("Влажность", `${forecast.day.avghumidity}%`)}
-      ${createRow("Видимость", `${forecast.day.avgvis_km} км`)}
-      ${createRow("УФ-индекс", `${forecast.day.uv}`)}
-      ${createRow("Шанс дождя", `${forecast.day.daily_chance_of_rain}%`)}
-      ${createRow("Шанс снега", `${forecast.day.daily_chance_of_snow}%`)}
-      ${createRow(
-        "Восход / Закат",
-        `${convertTo24(forecast.astro.sunrise)} / ${convertTo24(
-          forecast.astro.sunset
-        )}`
-      )}
-      ${createRow("Фаза луны", translateMoonPhase(forecast.astro.moon_phase))}
-      ${createRow(
-        "Освещённость",
-        translateMoonIllumination(forecast.astro.moon_illumination)
-      )}
-    </div>
-  `);
-
-      // Прогноз на завтра
-      if (forecastTomorrow) {
-        const tomorrowBlock = `
-    <div style="margin-top: 10px; padding: 10px;">
-      <h3 style="margin: 0 0 5px 0; font-size: 1em;">Прогноз на завтра</h3>
-      ${createRow("Условия", condition)}
-      ${createRow(
-        "Макс/мин. температура",
-        `${day.maxtemp_c}°C / ${day.mintemp_c}°C`
-      )}
-      ${createRow("Средняя температура", `${day.avgtemp_c}°C`)}
-      ${createRow("Макс. ветер", `${day.maxwind_kph} км/ч`)}
-      ${createRow("Осадки", `${day.totalprecip_mm} мм`)}
-      ${createRow("Влажность", `${day.avghumidity}%`)}
-      ${createRow("Видимость", `${day.avgvis_km} км`)}
-      ${createRow("УФ-индекс", `${day.uv}`)}
-      ${createRow("Шанс дождя", `${day.daily_chance_of_rain}%`)}
-      ${createRow("Шанс снега", `${day.daily_chance_of_snow}%`)}
-      ${createRow(
-        "Восход / Закат",
-        `${convertTo24(forecastTomorrow.astro.sunrise)} / ${convertTo24(
-          forecastTomorrow.astro.sunset
-        )}`
-      )}
-      ${createRow(
-        "Фаза луны",
-        translateMoonPhase(forecastTomorrow.astro.moon_phase)
-      )}
-      ${createRow(
-        "Освещённость",
-        translateMoonIllumination(forecastTomorrow.astro.moon_illumination)
-      )}
-    </div>
-  `;
-        $("#next-day-forecast").html(tomorrowBlock);
-      }
+        <div style="margin-bottom: 5px;">
+          <h3 style="margin: 0 0 5px 0; font-size: 1em;">Прогноз на день</h3>
+          ${createRow("Макс. температура", `${forecast.day.maxtemp_c}°C`)}
+          ${createRow("Мин. температура", `${forecast.day.mintemp_c}°C`)}
+          ${createRow("Средняя температура", `${forecast.day.avgtemp_c}°C`)}
+          ${createRow("Макс. ветер", `${forecast.day.maxwind_kph} км/ч`)}
+          
+          ${createRow("Осадки", `${forecast.day.totalprecip_mm} мм`)}
+          ${createRow("Влажность", `${forecast.day.avghumidity}%`)}
+          ${createRow("Видимость", `${forecast.day.avgvis_km} км`)}
+          ${createRow("УФ-индекс", `${forecast.day.uv}`)}
+          ${createRow("Шанс дождя", `${forecast.day.daily_chance_of_rain}%`)}
+          ${createRow("Шанс снега", `${forecast.day.daily_chance_of_snow}%`)}
+          ${createRow(
+            "Восход / Закат",
+            `${convertTo24(forecast.astro.sunrise)} / ${convertTo24(
+              forecast.astro.sunset
+            )}`
+          )}
+          ${createRow(
+            "Фаза луны",
+            translateMoonPhase(forecast.astro.moon_phase)
+          )}
+          ${createRow(
+            "Освещённость",
+            translateMoonIllumination(forecast.astro.moon_illumination)
+          )}
+      `);
     }
     function setupModalHandlers() {
       var modalIsOpen = false;
@@ -660,6 +693,13 @@
       createModal();
       setupModalHandlers();
     });
+
+    function interpolateColor(from, to, progress) {
+      var rgb = from.map(function (start, idx) {
+        return Math.round(start + (to[idx] - start) * progress);
+      });
+      return "rgb(" + rgb.join(",") + ")";
+    }
 
     function applyHourlyBackgrounds(
       currentHour,
@@ -893,7 +933,7 @@
         field: {
           name: "Город",
           description:
-            "Введите название города для получения прогноза погоды. (По умолчанию Москва!)",
+            "Введите название города для получения прогноза погоды. (По умолчанию Санкт-Петербург)",
         },
         onChange: function (value) {
           if (value && typeof value === "string") {
@@ -973,6 +1013,7 @@
       const weatherInterface = new WeatherInterface();
       weatherInterface.create();
       setInterval(() => weatherInterface.getWeather(), CACHE_REFRESH_MS); // раз в час
-    }, 5000);
+      setInterval(() => weatherInterface.getWeather(), 60000); // или 60000
+    }, 3000);
   });
 })();
