@@ -26,10 +26,10 @@
     DISPLAY: {
       SHOW_QUALITY_FOR_TV_SERIES: true,
       FULL_CARD: {
-        BORDER_COLOR: "#FFFACD",
+        BORDER_COLOR: "#fffacd00",
         TEXT_COLOR: "#FFFFFF",
         FONT_WEIGHT: "normal",
-        FONT_SIZE: "1.4em",
+        FONT_SIZE: "1.2em",
         FONT_STYLE: "",
       },
     },
