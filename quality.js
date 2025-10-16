@@ -9,19 +9,18 @@
       KEY: "lampa_quality_cache",
     },
     JACRED: {
-      PROTOCOL: "http://",
+      PROTOCOL: "https://",
       URL: "jacred.xyz",
       API_KEY: "",
       PROXY_LIST: [
         "http://cors.bwa.workers.dev/",
         "https://corsproxy.io/?",
-        "https://yacdn.org/proxy/",
-        "https://api.codetabs.com/v1/proxy/?quest=",
         "https://api.allorigins.win/raw?url=",
+        "https://yacdn.org/proxy/",
+        "https://cors-anywhere.herokuapp.com/",
         "https://thingproxy.freeboard.io/fetch/",
-        "https://jsonp.afeld.me/?url=",
       ],
-      TIMEOUT_MS: 1500,
+      TIMEOUT_MS: 3000,
     },
     DISPLAY: {
       SHOW_QUALITY_FOR_TV_SERIES: true,
@@ -51,7 +50,7 @@
   // ---- CSS ----
   var styleQUALITY =
     '<style id="lampa_quality_styles">' +
-    ".full-start-new__rate-line{visibility:hidden;flex-wrap:wrap;gap:.4em 0}" +
+    ".full-start-new__rate-line{visibility:hidden;gap:.4em 0}" +
     ".full-start-new__rate-line>*{margin-right:.5em!important;flex:0 0 auto}" +
     ".my-quality{min-width:2.8em;text-align:center;border:1.1px solid " +
     allQUALITY_CONFIG.DISPLAY.FULL_CARD.BORDER_COLOR +
@@ -96,9 +95,7 @@
     telesync: "TS",
     telecine: "TC",
   };
-  function log(t, m) {
-    if (allQUALITY_CONFIG.LOGGING[t]) console.log(t + ":", m);
-  }
+
   function getCardType(c) {
     var t = c.media_type || c.type;
     return t === "movie" || t === "tv"
@@ -166,33 +163,36 @@
     var i = 0;
 
     function buildProxyUrl(proxy, url) {
-      if (proxy.indexOf("?url=") !== -1) {
-        return proxy + encodeURIComponent(url);
-      }
-      if (proxy.indexOf("?") !== -1) {
+      var encodedUrl = encodeURIComponent(url);
+      
+      if (proxy.includes('?')) {
+        return proxy + encodedUrl;
+      } else if (proxy.endsWith('/')) {
         return proxy + url;
+      } else {
+        return proxy + '?' + encodedUrl;
       }
-      if (proxy.lastIndexOf("/") === proxy.length - 1) {
-        return proxy + url;
-      }
-      return proxy + encodeURIComponent(url);
     }
 
     function tryNext() {
-      if (i >= allQUALITY_CONFIG.JACRED.PROXY_LIST.length)
+      if (i >= allQUALITY_CONFIG.JACRED.PROXY_LIST.length) {
+
         return Promise.reject(new Error("all proxies failed"));
+      }
 
       var proxy = allQUALITY_CONFIG.JACRED.PROXY_LIST[i++];
       var proxUrl = buildProxyUrl(proxy, rawUrl);
 
-      log("GENERAL", "card " + cardId + " proxy: " + proxUrl);
 
-      return fetchWithTimeout(
-        proxUrl,
-        allQUALITY_CONFIG.JACRED.TIMEOUT_MS
-      ).catch(function () {
-        return tryNext();
-      });
+
+      return fetchWithTimeout(proxUrl, allQUALITY_CONFIG.JACRED.TIMEOUT_MS)
+        .then(function(response) {
+          return response;
+        })
+        .catch(function(error) {
+
+          return tryNext();
+        });
     }
 
     return tryNext();
@@ -272,9 +272,7 @@
         Date.now() - cache.timestamp >
         allQUALITY_CONFIG.CACHE.REFRESH_THRESHOLD_MS
       ) {
-        getBestReleaseFromJacred(normalizeCard(card), card.id).then(function (
-          res
-        ) {
+        getBestReleaseFromJacred(normalizeCard(card), card.id).then(function (res) {
           if (!res || res.quality === "NO") return;
           setCache(key, res);
           isFull
@@ -342,8 +340,8 @@
     Lampa.SettingsApi.addComponent({
       component: "quality_settings",
       name: "Качество на постерах",
-      icon: '<img src="data:image/png;base64,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" alt="video-call">',
-    });
+       icon: '<img src="data:image/png;base64,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" alt="video-call">',
+     });
 
     // Ввод своего прокси
     Lampa.SettingsApi.addParam({
@@ -399,16 +397,47 @@
           // можно восстановить дефолтные без кастомного
           allQUALITY_CONFIG.JACRED.PROXY_LIST = [
             "https://corsproxy.io/?",
-            "http://cors.bwa.workers.dev/",
-            "https://yacdn.org/proxy/",
-            "https://api.codetabs.com/v1/proxy/?quest=",
             "https://api.allorigins.win/raw?url=",
+            "https://yacdn.org/proxy/",
+            "https://cors-anywhere.herokuapp.com/",
             "https://thingproxy.freeboard.io/fetch/",
-            "https://jsonp.afeld.me/?url=",
           ];
         }
         Lampa.Noty.show("Свой прокси сброшен");
       },
+    });
+
+    // Кнопка тестирования прокси
+    Lampa.SettingsApi.addParam({
+      component: "quality_settings",
+      param: {
+        name: "test_proxy",
+        type: "button",
+        default: false,
+      },
+      field: {
+        name: "Тестировать прокси",
+        description: "Проверить работу текущих прокси",
+      },
+      onChange: function() {
+        testAllProxies();
+      },
+    });
+  }
+
+  function testAllProxies() {
+    var testUrl = "https://jacred.xyz/api/v1.0/torrents?search=test&year=2020";
+    
+    allQUALITY_CONFIG.JACRED.PROXY_LIST.forEach(function(proxy, index) {
+      var proxiedUrl = proxy + (proxy.includes('?') ? encodeURIComponent(testUrl) : testUrl);
+      
+      fetchWithTimeout(proxiedUrl, 5000)
+        .then(function() {
+          Lampa.Noty.show("Прокси " + (index + 1) + " работает");
+        })
+        .catch(function() {
+          Lampa.Noty.show("Прокси " + (index + 1) + " не работает", 5000);
+        });
     });
   }
 
@@ -429,7 +458,7 @@
           e.object && e.object.activity && e.object.activity.render
             ? e.object.activity.render()
             : null;
-        log("GENERAL", "full complite id=" + (e.data.movie.id || ""));
+
         handleFullCard(e.data.movie, renderEl);
       }
     });
@@ -440,22 +469,39 @@
 
   // ---- JacRed fetch ----
   function getBestReleaseFromJacred(card, cardId) {
-    if (!allQUALITY_CONFIG.JACRED.URL) return Promise.resolve(null);
+    if (!allQUALITY_CONFIG.JACRED.URL) {
+
+      return Promise.resolve(null);
+    }
+    
     var year = (card.release_date || "").slice(0, 4);
-    if (!year || isNaN(parseInt(year, 10))) return Promise.resolve(null);
+    if (!year || isNaN(parseInt(year, 10))) {
+      return Promise.resolve(null);
+    }
+
+    // Проверяем, что есть что искать
+    if (!card.original_title && !card.title) {
+      return Promise.resolve(null);
+    }
+
     var uid = Lampa.Storage.get("lampac_unic_id", "") || "";
+    
     function buildUrl(q, exact) {
+      // Нормализация запроса - удаляем лишние символы
+      var normalizedQuery = q.replace(/[^\w\sа-яА-ЯёЁ\-]/gi, '').trim();
+      
       return (
         allQUALITY_CONFIG.JACRED.PROTOCOL +
         allQUALITY_CONFIG.JACRED.URL +
         "/api/v1.0/torrents?search=" +
-        encodeURIComponent(q) +
+        encodeURIComponent(normalizedQuery) +
         "&year=" +
         encodeURIComponent(year) +
         (exact ? "&exact=true" : "") +
         (uid ? "&uid=" + encodeURIComponent(uid) : "")
       );
     }
+    
     var strategies = [];
     if ((card.original_title || "").replace(/\s+/g, "").length)
       strategies.push({
@@ -465,11 +511,11 @@
       });
     if ((card.title || "").replace(/\s+/g, "").length)
       strategies.push({ title: card.title, exact: true, name: "title exact" });
+      
     function tryStrategy(idx) {
       if (idx >= strategies.length) return Promise.resolve(null);
       var st = strategies[idx];
       var url = buildUrl(st.title, st.exact);
-      log("QUALITY", "card " + cardId + " JacRed " + st.name + ": " + url);
       return fetchViaProxies(url, cardId).then(
         function (txt) {
           var arr;
@@ -514,10 +560,6 @@
             }
           }
           if (best) {
-            log(
-              "QUALITY",
-              "card " + cardId + " best: " + best.title + " (" + bestQ + "p)"
-            );
             return { quality: bestQ, full_label: best.title };
           }
           return tryStrategy(idx + 1);
