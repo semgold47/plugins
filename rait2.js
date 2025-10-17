@@ -691,9 +691,10 @@
       // Для Rotten Tomatoes
       vote.html(getRatingHtml(ratings.rt, icons["tomatoes"].html));
     } else if (useMetacritic && ratings.meta) {
-      // Для Metacritic
-      vote.html(getRatingHtml(ratings.meta, icons["metacritic"].html));
-    } else if (useTmdb) {
+    // Для Metacritic убираем "/100"
+    const metaRating = ratings.meta.replace('/100', '');
+    vote.html(getRatingHtml(metaRating, icons["metacritic"].html));
+  } else if (useTmdb) {
       vote.html(getRatingHtml(data.tmdb_rating || cur, icons["tmdb"].html));
     }
   }
@@ -784,57 +785,54 @@
 
   let currentCardData = {};
 
-  // --- Отрисовка рейтингов ---
-  function renderRatings(box, event = null) {
-    const rateLine = document.querySelector(".full-start-new__rate-line");
-    if (!rateLine) return;
+function renderRatings(box, event = null) {
+  const rateLine = document.querySelector(".full-start-new__rate-line");
+  if (!rateLine) return;
 
-    const movie = event?.data?.movie || {};
-    const card = event?.data?.card || {};
-    const fullData =
-      (typeof Lampa.Full !== "undefined" && Lampa.Full.data) || {};
+  const movie = event?.data?.movie || {};
+  const card = event?.data?.card || {};
+  const fullData = (typeof Lampa.Full !== "undefined" && Lampa.Full.data) || {};
 
-    const combined = { ...fullData, ...card, ...movie };
-    const ratings = box?.ratings || {};
+  const combined = { ...fullData, ...card, ...movie };
+  const ratings = box?.ratings || {};
 
-    const tmdbRate =
-      ratings.tmdb || combined.vote_average || combined.tmdb_rating || "—";
-    const kpRate =
-      ratings.kp || combined.kp_rating || combined.rating_kp || "—";
-    const imdbRate =
-      ratings.imdb || combined.imdb_rating || combined.rating_imdb || "—";
+  const tmdbRate = ratings.tmdb || combined.vote_average || combined.tmdb_rating || "—";
+  const kpRate = ratings.kp || combined.kp_rating || combined.rating_kp || "—";
+  const imdbRate = ratings.imdb || combined.imdb_rating || combined.rating_imdb || "—";
 
-    const addRate = (cls, value, iconHtml) => {
-      let el = rateLine.querySelector(`.${cls}`);
-      if (!el) {
-        el = document.createElement("div");
-        el.className = `full-start__rate ${cls}`;
+  const addRate = (cls, value, iconHtml) => {
+    let el = rateLine.querySelector(`.${cls}`);
+    if (!el) {
+      el = document.createElement("div");
+      el.className = `full-start__rate ${cls}`;
 
-        const pgElement = rateLine.querySelector(".full-start__pg");
-        if (pgElement) {
-          rateLine.insertBefore(el, pgElement);
-        } else {
-          rateLine.appendChild(el);
-        }
+      const pgElement = rateLine.querySelector(".full-start__pg");
+      if (pgElement) {
+        rateLine.insertBefore(el, pgElement);
+      } else {
+        rateLine.appendChild(el);
       }
+    }
 
-      el.innerHTML = `
-      <div style="width: max-content; padding: 0 0.7em;">${value}</div>
-      <div class="source--icon" style="width: max-content;">${iconHtml}</div>`;
-    };
+    el.innerHTML = `
+    <div style="width: max-content; padding: 0 0.7em;">${value}</div>
+    <div class="source--icon" style="width: max-content;">${iconHtml}</div>`;
+  };
 
-    addRate("rate--tmdb", tmdbRate, icons.tmdb?.html || "⚪");
-    addRate("rate--imdb", imdbRate, icons.imdb?.html || "🔵");
-    addRate("rate--kp", kpRate, icons.kp?.html || "🟡");
+  addRate("rate--tmdb", tmdbRate, icons.tmdb?.html || "⚪");
+  addRate("rate--imdb", imdbRate, icons.imdb?.html || "🔵");
+  addRate("rate--kp", kpRate, icons.kp?.html || "🟡");
 
-    if (ratings.rt)
-      addRate("rate--rt", ratings.rt, icons.tomatoes?.html || "🍅");
-    if (ratings.meta)
-      addRate("rate--meta", ratings.meta, icons.metacritic?.html || "🟢");
-    if (box.awards)
-      addRate("rate--awards", box.awards, icons.awards?.html || "🏆");
+  if (ratings.rt)
+    addRate("rate--rt", ratings.rt, icons.tomatoes?.html || "🍅");
+  if (ratings.meta) {
+    // Для Metacritic убираем "/100"
+    const metaRating = ratings.meta.replace('/100', '');
+    addRate("rate--meta", metaRating, icons.metacritic?.html || "🟢");
   }
-
+  if (box.awards)
+    addRate("rate--awards", box.awards, icons.awards?.html || "🏆");
+}
   function renderAwardsAccordionUI(awardsItems) {
     if (!awardsItems || !awardsItems.length) return;
 
