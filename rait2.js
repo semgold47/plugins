@@ -1,6 +1,7 @@
 (function () {
   "use strict";
-  console.log("%c[rait2] ⚡️ v4.0", "color:#0ff;font-weight:bold;");
+
+  console.log("%c[raitNew] ⚡️ v4.0", "color:#0ff;font-weight:bold;");
   // --- Функция перевода наград с английского на русский ---
   function translateAwards(awardsText) {
     if (!awardsText) return awardsText;
@@ -183,216 +184,221 @@
     return awardMap[name] || name;
   }
 
-// --- Универсальные стили для рейтингов, бюджета и наград ---
-const style = document.createElement("style");
-style.textContent = `
-/* ===================== BOX OFFICE ===================== */
-.full-start-new__box-office {
-  width: 100%;
-  overflow: hidden;
-  margin-top: 0.6em;
-}
+  const style = document.createElement("style");
+  style.textContent = `
 
-.full-start-new__box-office .box-office-line {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  gap: 0.25em;
-  margin-bottom: 0.2em;
-  font-size: 1.05em;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.full-start-new__box-office .box-office-line::-webkit-scrollbar {
-  display: none;
-}
+  .full-start-new__box-office {
+    width: 100%;
+    overflow: hidden;
+    margin-top: 0.6em;
+  }
 
-.full-start-new__box-office .box-office-item {
+  .full-start-new__box-office .box-office-line {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0.25em;
+    margin-bottom: 0.2em;
+    font-size: 1.05em;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .full-start-new__box-office .box-office-line::-webkit-scrollbar {
+    display: none;
+  }
 
-  padding: 0.4em 0.2em;
-  border-radius: 0.35em;
-  color: #fff;
-  text-align: center;
-  white-space: nowrap;
-  min-width: fit-content;
-  opacity: 0.95;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.full-start-new__box-office .box-office-item:hover {
-  transform: scale(1.03);
-  opacity: 1;
-}
-
-/* Цвета */
-.box-office-item.budget { background: #207fd1; }
-.box-office-item.world  { background: #1e9e45; }
-.box-office-item.usa    { background: #bb9a4ad6; }
-.box-office-item.russia { background: #642e9385; }
+  .full-start-new__box-office .box-office-item {
+    padding: 0.4em 0.25em;
+    border-radius: 0.35em;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    min-width: fit-content;
+    opacity: 0.8;
+    transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.25s ease;
+  }
 
 
-/* ===================== РЕЙТИНГИ ===================== */
-.full-start__rate {
-  width: auto;
-  max-width: 100%;
-  min-width: min-content;
-  margin-right: 0.2em !important;
-}
+  /* Hover / Focus (TV) */
+  .full-start-new__box-office .box-office-item:hover,
+  .full-start-new__box-office .box-office-item.focus {
+    transform: scale(1.05);
+    opacity: 1;
+    box-shadow: 0 0 0.6em rgba(255,255,255,0.4);
+    z-index: 10;
+  }
 
-.full-start-new__rate-line {
-  margin-bottom: 0.2em;
-}
+  /* Цвета */
+  .box-office-item.budget { background: #207fd1c4; }
+  .box-office-item.world  { background: #1e9e45; }
+  .box-office-item.usa    { background: #bb9a4ad6; }
+  .box-office-item.russia { background: #642e9385; }
 
-.rate--awards {
-  display: flex;
-  align-items: center;
-  gap: 0.25em;
-  width: max-content;
-  background: #d4af37;
-  color: #000;
-}
+  .full-start__rate {
+    width: auto;
+    max-width: 100%;
+    min-width: min-content;
+    margin-right: 0.2em !important;
+    opacity: 0.8;
+  }
 
-.rate--awards > div:first-child {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+  .full-start-new__rate-line {
+    margin-bottom: 0.2em;
+    margin-top: 0.2em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2em 0;
+    width: 100%;
+    overflow-x: auto;
+  }
 
-.source--icon {
-  flex-shrink: 0;
-  width: max-content;
-}
+  .rate--awards {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    background: #97c939d6;
+  }
 
-.rate--imdb  { background: #bb9a4ad6; }
-.rate--rt    { background: #7b2716cf; }
-.rate--meta  { background: #66c2a5; }
-.rate--kp    { background: #642e9385; }
-.rate--tmdb  { background: #197993bf; }
+  .rate--awards > div:first-child {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+  }
+
+  .source--icon {
+    flex-shrink: 0;
+    width: max-content;
+  }
+
+  .rate--imdb  { background: #bb9a4ad6; }
+  .rate--rt    { background: #7b2716cf; }
+  .rate--meta  { background: #66c2a5; }
+  .rate--kp    { background: #642e9385; }
+  .rate--tmdb  { background: #197993bf; }
 
 
-/* ===================== НАГРАДЫ ===================== */
-.full-start-new__awards {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  background-color: rgba(0,0,0,0.35);
-  border-radius: 0.6em;
-  padding: 0.4em;
-  margin: 0.7em 0;
-  overflow: hidden;
-}
+  /* ===================== НАГРАДЫ ===================== */
+  .full-start-new__awards {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 1em;
+    padding: 0.2em;
+    overflow: hidden;
+  }
 
-/* Заголовок блока */
-.full-start-new__awards .awards-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: bold;
-  cursor: pointer;
-  padding: 0.5em 0.7em;
-  border-radius: 0.5em;
-  color: #fff;
-  background-color: rgba(255,255,255,0.05);
-  transition: all 0.25s ease;
-      font-size: 1.6em;
+  /* Заголовок блока */
+  .full-start-new__awards .awards-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.5em 0.7em;
+    border-radius: 0.5em;
+    color: #fff;
+    background-color: rgba(255,255,255,0.05);
+    transition: all 0.25s ease;
+    font-size: 1.6em;
     font-weight: 400;
-    box-shadow: 0 0 0.5em #fff, 0 0 0.1em;
-}
+    box-shadow: 0 0 0.4em rgba(255,255,255,0.5);
+  }
 
-/* Контент */
-.full-start-new__awards .awards-content {
-  overflow: hidden;
-  transition: height 0.4s ease;
-  margin-top: 0.3em;
-}
+  /* Контент */
+  .full-start-new__awards .awards-content {
+    overflow: hidden;
+    transition: height 0.4s ease;
+    margin-top: 0.3em;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5em;
+  }
 
-.full-start-new__awards .award-group {
-  margin-bottom: 0.4em;
-  overflow: hidden;
-}
+  .full-start-new__awards .award-group {
+    margin-bottom: 0.4em;
+    overflow: hidden;
+  }
 
-/* Заголовок подгруппы */
-.full-start-new__awards .award-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: bold;
-  cursor: pointer;
-  padding: 0.45em 0.6em;
-  background-color: rgba(0,0,0,0.3);
-  border-radius: 4px;
-  margin: 4px 0;
-  color: #fff;
-  transition: all 0.2s ease;
-}
+  /* Заголовок подгруппы */
+  .full-start-new__awards .award-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.4em 0.2em;
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 0.5em;
+    color: #fff;
+    transition: all 0.2s ease;
+  }
 
-/* Список наград */
-.full-start-new__awards .award-items {
-  margin: 0 0 0.4em 1.2em;
-  padding-left: 0;
-  color: #fff;
-  overflow: hidden;
-  transition: height 0.3s ease;
-  font-size: 1.2em;
-  font-weight: 600;
-}
+  /* Список наград */
+  .full-start-new__awards .award-items {
+    margin: 0 0 0.4em 0.4em;
+    padding-left: 0;
+    color: #fff;
+    overflow: hidden;
+    transition: height 0.3s ease;
+    font-size: 1.2em;
+    font-weight: 600;
+  }
 
-/* Треугольник-переключатель */
-.award-toggle {
-  font-weight: bold;
-  color: #999;
-  transition: transform 0.3s ease, color 0.2s ease;
-}
+  /* Треугольник-переключатель */
+  .award-toggle {
+    font-weight: bold;
+    color: #999;
+    transition: transform 0.3s ease, color 0.2s ease;
+  }
 
-/* ===================== ФОКУС / HOVER (TV / Lampa) ===================== */
-.full-start-new__awards .selector {
-  outline: none;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
 
-.full-start-new__awards .selector.focus,
-.full-start-new__awards .selector.hover {
-  background-color: #fff !important;
-  box-shadow: 0 0 10px 2px rgba(255,255,255,0.4);
-  border-radius: 6px;
-}
+  .full-start-new__awards .selector {
+    outline: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    background-color: rgba(0, 0, 0, 0.3);
+  }
 
-.full-start-new__awards .selector.focus span,
-.full-start-new__awards .selector.hover span {
-  color: #000 !important;
-  font-weight: bold;
-}
+  .full-start-new__awards .selector.focus,
+  .full-start-new__awards .selector.hover {
+    background-color: rgba(255,255,255,0.9) !important;
+    box-shadow: 0 0 0.3em rgba(255,255,255,0.4);
+  }
 
-.full-start-new__awards .selector.focus .award-toggle,
-.full-start-new__awards .selector.hover .award-toggle {
-  color: #000 !important;
-}
+  .full-start-new__awards .selector.focus span,
+  .full-start-new__awards .selector.hover span {
+    color: #000 !important;
+    font-weight: bold;
+  }
 
-/* ===================== АНИМАЦИИ / СОСТОЯНИЯ ===================== */
-.full-start-new__awards .awards-content[style*="height: 0"] {
-  visibility: hidden;
-  pointer-events: none;
-}
+  .full-start-new__awards .selector.focus .award-toggle,
+  .full-start-new__awards .selector.hover .award-toggle {
+    color: #000 !important;
+  }
 
-.full-start-new__awards .award-items[style*="height: 0"] {
-  visibility: hidden;
-  pointer-events: none;
-}
+  /* ===================== АНИМАЦИИ / СОСТОЯНИЯ ===================== */
+  .full-start-new__awards .awards-content[style*="height: 0"],
+  .full-start-new__awards .award-items[style*="height: 0"] {
+    visibility: hidden;
+    pointer-events: none;
+  }
 
-.full-start-new__awards .awards-content.auto-height,
-.full-start-new__awards .award-items.auto-height {
-  height: auto !important;
-  overflow: visible;
-}
+  .full-start-new__awards .awards-content.auto-height,
+  .full-start-new__awards .award-items.auto-height {
+    height: auto !important;
+    overflow: visible;
+  }
 
-.full-start-new__awards .awards-content.resizing,
-.full-start-new__awards .award-items.resizing {
-  transition: none;
-}
-`;
-document.head.appendChild(style);
+  .full-start-new__awards .awards-content.resizing,
+  .full-start-new__awards .award-items.resizing {
+    transition: none;
+  }
 
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  `;
+  document.head.appendChild(style);
 
   // --- Иконки ---
   var icons = {
@@ -418,13 +424,9 @@ document.head.appendChild(style);
     awards: { html: "🏆" },
   };
 
-  document.head.appendChild(style);
-
-
   // --- API ключи ---
-  const OMDB_API_KEY = Lampa.Storage.get("box_omdb_api_key", Lampa.Storage.get("omdb_api_key", ""));
+  const OMDB_API_KEY = Lampa.Storage.get("omdb_api_key", "");
   const KP_API_KEY = Lampa.Storage.get("box_kp_api_key", Lampa.Storage.get("kp_api_key", ""));
-
   // --- Кэш ---
   const CACHE_KEY = "rait_boxoffice_cache_v2";
   const CACHE_TTL = Lampa.Storage.get("box_cache_ttl_days", Lampa.Storage.get("cache_ttl_days", 7)) * 24 * 60 * 60 * 1000;
@@ -608,29 +610,15 @@ document.head.appendChild(style);
     return data;
   }
 
-  function start() {
-    if (!window.Lampa || !window.Lampa.Listener || !window.Lampa.Card) return;
-  }
-
-  if (window.appready) {
-    start();
-  } else {
-    Lampa.Listener.follow("app", function (e) {
-      if (e.type === "ready") start();
-    });
-  }
-
-  function renderRatings(box, event = null) {
+    function renderRatings(box, event = null) {
     const rateLine = document.querySelector(".full-start-new__rate-line");
     if (!rateLine) return;
 
     const movie = event?.data?.movie || {};
     const card = event?.data?.card || {};
     const fullData = (typeof Lampa.Full !== "undefined" && Lampa.Full.data) || {};
-
     const combined = { ...fullData, ...card, ...movie };
     const ratings = box?.ratings || {};
-
     const tmdbRate = ratings.tmdb || combined.vote_average || combined.tmdb_rating || "—";
     const kpRate = ratings.kp || combined.kp_rating || combined.rating_kp || "—";
     const imdbRate = ratings.imdb || combined.imdb_rating || combined.rating_imdb || "—";
@@ -890,6 +878,18 @@ document.head.appendChild(style);
     }
   }
 
+  function start() {
+    if (!window.Lampa || !window.Lampa.Listener || !window.Lampa.Card) return;
+  }
+
+  if (window.appready) {
+    start();
+  } else {
+    Lampa.Listener.follow("app", function (e) {
+      if (e.type === "ready") start();
+    });
+  }
+
   // --- Listener ---
   Lampa.Listener.follow("full", async (event) => {
     if (event.type !== "start") return;
@@ -955,11 +955,11 @@ document.head.appendChild(style);
     Lampa.SettingsApi.addParam({
       component: "boxoffice_info",
       param: {
-        name: "box_omdb_api_key",
+        name: "omdb_api_key",
         type: "input",
         values: "",
         placeholder: "Введите API ключ OMDB",
-        default: Lampa.Storage.get("box_omdb_api_key", Lampa.Storage.get("omdb_api_key", DEFAULTS.omdb_apikey)),
+        default: Lampa.Storage.get("omdb_api_key", Lampa.Storage.get("omdb_api_key", DEFAULTS.omdb_apikey)),
       },
       field: {
         name: "Введите API ключ OMDB",
@@ -997,7 +997,7 @@ document.head.appendChild(style);
       param: { name: "clear_box_cache", type: "button", values: "" },
       field: {
         name: "🧹 Очистить кэш",
-        description: "Полная очистка кэша рейтингов и сборов",
+        description: "Полная очистка кэша рейтингов",
       },
       onChange: () => {
         const beforeCount = Object.keys(cache).length;
@@ -1009,10 +1009,9 @@ document.head.appendChild(style);
 
     Lampa.SettingsApi.addComponent({
       component: "boxoffice_info",
-      name: "Box Office",
+      name: "Сборы и награды",
       icon: '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAAEeklEQVR4nO2dy4sdRRSHJ2JifAUNiaCJ/4D6F4S4ULIIuIiOIrgQFXeCCxeKogujYBInymBWgYAL0ZWaRSQiiuDOByZiBLNWxwg+ZxSCj/jJ0ZrQXLseXX3vPbcnvw9mM9V1qup8PVV9u6vvzM01AK4BngVOAr8hxoXl8kTI7dZmzpvJvwtYGVuTIsYyMN+W/L+jVcS4OXdeQph2dOZPn1/+nY7CvCR82GsCPnNqXMCJucT0s6N1tRadAXZGcrxiha10b0akiOZZAqaDBDgjAc5IgDMS4IwEOCMBzkiAMxLgjAQ4IwHOSIAzEuCMBDgjAc5IgDMS4IwEOCMBzkiAMxLgjAQ4IwFrVQCwATgAfAssAfvtd43y9cBCKLeffcDFHeKvH4n/vP0u0n7btvDTwFHgAeDqvuOZRQHWwVH2N8oPtpQf6BB/oaX+Qqb91IbYJ4BLa8dTSzTP0YLywHaWjLLUKP8ucmZeXhD7ssiLImcy7ef4BNhWM55aJikgWT+RhLsLYt/ZI36Or9sk5NqrJRq3b4O5+okEvF4Q+7Ue8Uv4GNjYZTy1ROP2bTBXPzH4s8CmRNyN4XWe2vilPN5lPLVE4/ZtMFc/M/h7EnH3pCqWtG/rDHALcCwR6ufm1VGuvVqicfs2mKtPmqOJuK+kKpa23zjuyUS4+7vG60o0bt8Gc/VJc7ZtGgIuCZeMUWoSlvhLeLOgvx8CP4arsi+AReCmoQsw7m2JeRsZKgXcGjn8dIf+NvkLOFTyQS3azxkQcKwl5ssTEnBl5PCVSgGrvJeTEO3nDAj4Hbhq5NbDT5MQMKb+xnhpqAJGF8HdFDCDAmw6unGoAo43jj8yUAHGi0MV8Aew2e6SAt/PqIC37NYFsN1OmMgxp4YqwHgQ2EUhDgK2N465PreYD1HAO8DhWRXQNc4QBfwJ/FB6sASMX0AnJGCAAoBNkcOXNQVNR0D1rYiuU2/x8V0Dde1IrNweK1L24aYqfqSvdinZxhsXooBD5Hm/Nn5LP59KtHPfhXgZejN5HqqNH8quCNNO7MxffSDTvBcV43j4EGbJf3stfBC7CPgm88V21/aIX8qjJeMp5OBgBISyxcRgPugpuISPSh/KF65XNwxNwI7EgB6esICvgOtKx1PAYlWeprAxK1oOrAuJaJt+tvWIX3Lm/y/5PeK929wuOW0BbVv59nUof6Sl/NWe8VML7mP2zLnjeFK3TxZzyZ+0gA2h00uRzbm58nVhx8KZ8CD+SHPbYsf4o/wKfGkP3e1Ss3m1Uzge26D7XNjf+nn4hkmLeQp4ITXnT02AKEMCnJEAZyTAGQlwRgKckQBnJMAZCXBGApyRAGckwBkJcEYCnJEAZyTAGQlwRgKckQBnJMAZCXBGApyRAGckwBkJcEYCnJEAZyRghgXE/qX5Tu9OrxUSr2MtW+HJmB0xcT41Ac9Mvh0R4WkTsDX1/ZxiYti7EFtW56j58FqQmA6W69tHF4r53FdFirFgOb4jtlpvAfba4hBexRGMBbvStJxabv+bdgL/AJMbblfhELaMAAAAAElFTkSuQmCC" alt="rating-icon"><style>.rating-icon { color: white; }</style>',
     });
   }
-
   registerSettings();
 })();
