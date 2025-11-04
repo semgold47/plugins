@@ -1,8 +1,6 @@
 (function () {
   "use strict";
-
-  console.log("%c[raitNew.js] ⚡️ v4.0", "color:#0ff;font-weight:bold;");
-
+  console.log("%c[rait2] ⚡️ v4.0", "color:#0ff;font-weight:bold;");
   // --- Функция перевода наград с английского на русский ---
   function translateAwards(awardsText) {
     if (!awardsText) return awardsText;
@@ -185,267 +183,216 @@
     return awardMap[name] || name;
   }
 
-  // --- Стили ---
-  const style = document.createElement("style");
-  style.innerHTML = `
+// --- Универсальные стили для рейтингов, бюджета и наград ---
+const style = document.createElement("style");
+style.textContent = `
+/* ===================== BOX OFFICE ===================== */
+.full-start-new__box-office {
+  width: 100%;
+  overflow: hidden;
+  margin-top: 0.6em;
+}
+
 .full-start-new__box-office .box-office-line {
   display: flex;
-  gap: 0.3em;
-  margin: 5px -5px;
-  padding: 5px;
-  font-size: 1.1em;
-  max-width: 100%;
-  overflow-x: auto;
-}
-.full-start-new__box-office .box-office-item {
-  padding: 0.4em 0.6em;
-  border-radius: 5px;
-  color: #fff;
-  min-width: 20%;
-  text-align: center;
-  flex: 1 0 auto;
-}
-
-.rate--awards {
-  display: flex;
   flex-direction: row;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: 6px;
-  width: min-content;
-  max-width: 100%;
+  align-items: stretch;
+  gap: 0.25em;
+  margin-bottom: 0.2em;
+  font-size: 1.05em;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
-.rate--awards > div:first-child {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex-shrink: 1;
-}
-.source--icon {
-  flex-shrink: 0;
-  white-space: nowrap;
-  width: max-content;
+.full-start-new__box-office .box-office-line::-webkit-scrollbar {
+  display: none;
 }
 
+.full-start-new__box-office .box-office-item {
+
+  padding: 0.4em 0.2em;
+  border-radius: 0.35em;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  min-width: fit-content;
+  opacity: 0.95;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.full-start-new__box-office .box-office-item:hover {
+  transform: scale(1.03);
+  opacity: 1;
+}
+
+/* Цвета */
+.box-office-item.budget { background: #207fd1; }
+.box-office-item.world  { background: #1e9e45; }
+.box-office-item.usa    { background: #bb9a4ad6; }
+.box-office-item.russia { background: #642e9385; }
+
+
+/* ===================== РЕЙТИНГИ ===================== */
 .full-start__rate {
   width: auto;
   max-width: 100%;
   min-width: min-content;
+  margin-right: 0.2em !important;
 }
 
-.rate--imdb { background: #bb9a4ad6; }
-.rate--rt { background: #7b2716cf; }
-.rate--meta { background: #66c2a5; }
-.rate--kp { background: #642e9385; }
-.rate--tmdb { background: #197993bf; }
-.rate--awards { background: #d4af37; color: #000; }
-
-.box-office-item.budget { background: #207fd1; }
-.box-office-item.world { background: #1e9e45; }
-.box-office-item.usa { background: #bb9a4ad6; }
-.box-office-item.russia { background: #642e9385; }
-
-.award-toggle {
-  font-weight: bold;
-  color: #444;
+.full-start-new__rate-line {
+  margin-bottom: 0.2em;
 }
 
-.full-start-new__right {
-  flex-grow: 0 !important;
-  flex-shrink: 1 !important;
-  flex-basis: auto !important;
-  min-width: 0;
+.rate--awards {
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+  width: max-content;
+  background: #d4af37;
+  color: #000;
+}
+
+.rate--awards > div:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.source--icon {
+  flex-shrink: 0;
+  width: max-content;
+}
+
+.rate--imdb  { background: #bb9a4ad6; }
+.rate--rt    { background: #7b2716cf; }
+.rate--meta  { background: #66c2a5; }
+.rate--kp    { background: #642e9385; }
+.rate--tmdb  { background: #197993bf; }
+
+
+/* ===================== НАГРАДЫ ===================== */
+.full-start-new__awards {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background-color: rgba(0,0,0,0.35);
+  border-radius: 0.6em;
+  padding: 0.4em;
+  margin: 0.7em 0;
   overflow: hidden;
 }
-.full-start-new__rate-line,
-.full-start-new__rate-line *,
-.full-start-new__box-office,
-.full-start-new__box-office * {
-  pointer-events: auto !important;
-  user-select: auto !important;
-}
-.full-start-new__rate-line::-webkit-scrollbar {
-  display: none;
-}
-.full-start-new__rate-line:focus {
-  outline: 2px solid #888;
-}
-.full-start-new__awards {
-    border-radius: 0.6em;
-    margin: 0.7em 0;
-    background-color: rgba(0, 0, 0, 0.3);
-    display: flex;
-    flex-direction: column;
-    -webkit-border-radius: 0.6em;
-    -moz-border-radius: 0.6em;
-    border-radius: 0.6em;
-    padding: 0.3em;
-    -webkit-box-align: start;
-    -webkit-align-items: start;
-    -ms-flex-align: start;
-    align-items: start;
-}
 
+/* Заголовок блока */
 .full-start-new__awards .awards-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 0.5em;
-    border-radius: 0.6em;
-    order: 2; /* Заголовок всегда внизу */
-    color: #fff; /* Белый текст по умолчанию */
-    transition: all 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0.5em 0.7em;
+  border-radius: 0.5em;
+  color: #fff;
+  background-color: rgba(255,255,255,0.05);
+  transition: all 0.25s ease;
+      font-size: 1.6em;
+    font-weight: 400;
+    box-shadow: 0 0 0.5em #fff, 0 0 0.1em;
 }
 
+/* Контент */
 .full-start-new__awards .awards-content {
-    overflow: hidden;
-    transition: height 0.4s ease;
-    order: 1; /* Контент всегда сверху */
-    margin-top: 0;
-
+  overflow: hidden;
+  transition: height 0.4s ease;
+  margin-top: 0.3em;
 }
 
 .full-start-new__awards .award-group {
-    margin-bottom: 8px;
+  margin-bottom: 0.4em;
+  overflow: hidden;
 }
 
-.full-start-new__awards .award-group .award-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 8px 10px;
-    background-color: rgba(0,0,0,0.3);
-    border-radius: 4px;
-    margin: 4px 0;
-    color: #fff; /* Белый текст по умолчанию */
-    transition: all 0.2s ease;
+/* Заголовок подгруппы */
+.full-start-new__awards .award-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0.45em 0.6em;
+  background-color: rgba(0,0,0,0.3);
+  border-radius: 4px;
+  margin: 4px 0;
+  color: #fff;
+  transition: all 0.2s ease;
 }
 
-.full-start-new__awards .award-group .award-items {
-    margin: 0 0 10px 20px;
-    padding-left: 0;
-    list-style: disc;
-    color: #fff;
-    overflow: hidden;
-    transition: height 0.3s ease;
+/* Список наград */
+.full-start-new__awards .award-items {
+  margin: 0 0 0.4em 1.2em;
+  padding-left: 0;
+  color: #fff;
+  overflow: hidden;
+  transition: height 0.3s ease;
+  font-size: 1.2em;
+  font-weight: 600;
 }
 
+/* Треугольник-переключатель */
 .award-toggle {
-    font-weight: bold;
-    color: #444;
-    transition: transform 0.3s ease;
+  font-weight: bold;
+  color: #999;
+  transition: transform 0.3s ease, color 0.2s ease;
 }
 
-/* Стили для SpatialNavigator - БЕЛЫЙ ФОН И ЧЕРНЫЙ ТЕКСТ ПРИ ФОКУСЕ */
+/* ===================== ФОКУС / HOVER (TV / Lampa) ===================== */
 .full-start-new__awards .selector {
-    cursor: pointer;
-    outline: none;
-    transition: all 0.2s ease;
-    position: relative;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
 .full-start-new__awards .selector.focus,
 .full-start-new__awards .selector.hover {
-    outline: none !important;
-    background-color: #ffffff !important; /* Белый фон */
-    box-shadow: 0 0 10px 2px rgba(255,255,255,0.5);
-    border-radius: 6px;
-    transition: all 0.25s ease;
+  background-color: #fff !important;
+  box-shadow: 0 0 10px 2px rgba(255,255,255,0.4);
+  border-radius: 6px;
 }
 
 .full-start-new__awards .selector.focus span,
 .full-start-new__awards .selector.hover span {
-    color: #000000 !important; /* Черный текст */
-    text-shadow: none !important;
-    font-weight: bold;
+  color: #000 !important;
+  font-weight: bold;
 }
 
-.full-start-new__awards .awards-header.selector.focus,
-.full-start-new__awards .awards-header.selector.hover {
-    background-color: #ffffff !important; /* Белый фон */
-    box-shadow: 0 0 12px 3px rgba(12, 41, 95, 0.63);
-    border-radius: 8px;
-}
-
-.full-start-new__awards .awards-header.selector.focus span,
-.full-start-new__awards .awards-header.selector.hover span {
-    color: #000000 !important; /* Черный текст */
-    text-shadow: none !important;
-}
-
-/* Особые стили для иконки переключения при фокусе */
 .full-start-new__awards .selector.focus .award-toggle,
 .full-start-new__awards .selector.hover .award-toggle {
-    color: #000000 !important; /* Черная иконка переключения */
-    font-weight: bold;
+  color: #000 !important;
 }
 
-/* Стили для скрытия неактивных элементов */
-.full-start-new__awards .awards-content[style*="height: 0px"],
+/* ===================== АНИМАЦИИ / СОСТОЯНИЯ ===================== */
 .full-start-new__awards .awards-content[style*="height: 0"] {
-    visibility: hidden;
-    pointer-events: none;
+  visibility: hidden;
+  pointer-events: none;
 }
 
-.full-start-new__awards .awards-content[style*="height: 0px"] .award-header,
-.full-start-new__awards .awards-content[style*="height: 0"] .award-header {
-    display: none !important;
-}
-
-.full-start-new__awards .award-items[style*="height: 0px"],
 .full-start-new__awards .award-items[style*="height: 0"] {
-    visibility: hidden;
-    pointer-events: none;
+  visibility: hidden;
+  pointer-events: none;
 }
 
-/* Убедитесь, что скрытые элементы не занимают место */
-.full-start-new__awards .award-header.selector:not([data-nav="main"]) {
-    transition: opacity 0.2s ease;
-}
-
-/* Дополнительная защита - скрываем через CSS когда родитель скрыт */
-.full-start-new__awards .awards-content.collapsed .award-header {
-    opacity: 0;
-    height: 0;
-    overflow: hidden;
-    margin: 0;
-    padding: 0;
-}
-
-/* Автоматическая высота после анимации */
-.full-start-new__awards .awards-content.auto-height {
-    height: auto !important;
-    overflow: visible;
-}
-
+.full-start-new__awards .awards-content.auto-height,
 .full-start-new__awards .award-items.auto-height {
-    height: auto !important;
-    overflow: visible;
+  height: auto !important;
+  overflow: visible;
 }
 
-/* Плавное изменение высоты при ресайзе */
-.full-start-new__awards .awards-content.resizing {
-    transition: none;
-}
-
+.full-start-new__awards .awards-content.resizing,
 .full-start-new__awards .award-items.resizing {
-    transition: none;
-}
-    .full-start-new__rate-line {
-  display: flex;
-  overflow-x: auto;
-  flex-wrap: nowrap;
-  flex: 0 0 auto;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  margin: auto;
+  transition: none;
 }
 `;
+document.head.appendChild(style);
+
 
   // --- Иконки ---
   var icons = {
@@ -473,16 +420,14 @@
 
   document.head.appendChild(style);
 
+
   // --- API ключи ---
-  const OMDB_API_KEY = Lampa.Storage.get("omdb_api_key", "574b7b0b");
-  const KP_API_KEY = Lampa.Storage.get(
-    "kp_api_key",
-    "86554b7a-cba6-45b2-8999-ccb3a65aa969"
-  );
+  const OMDB_API_KEY = Lampa.Storage.get("box_omdb_api_key", Lampa.Storage.get("omdb_api_key", ""));
+  const KP_API_KEY = Lampa.Storage.get("box_kp_api_key", Lampa.Storage.get("kp_api_key", ""));
 
   // --- Кэш ---
-  const CACHE_KEY = "rait_boxoffice_cache_v3";
-  const CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
+  const CACHE_KEY = "rait_boxoffice_cache_v2";
+  const CACHE_TTL = Lampa.Storage.get("box_cache_ttl_days", Lampa.Storage.get("cache_ttl_days", 7)) * 24 * 60 * 60 * 1000;
   let cache = Lampa.Storage.get(CACHE_KEY) || {};
 
   const saveCache = () => {
@@ -606,7 +551,6 @@
       const data = await res.json();
 
       if (data.Response === "False") {
-        // Lampa.Noty.show(`❌ OMDb: ${data.Error}`);
         return null;
       }
 
@@ -664,115 +608,8 @@
     return data;
   }
 
-  // --- Функции для карточек ---
-  function getRatingHtml(rating, iconHtml) {
-    return `<div style="display: flex; align-items: center; gap: 0.3em;">${rating} ${iconHtml}</div>`;
-  }
-
-  function updateCardRating(card, data) {
-    const vote = card.find(".card__vote");
-    if (!vote.length) return;
-    const cur = vote.text();
-
-    const useImdb = Lampa.Storage.get("use_imdb_rating", false);
-    const useKp = Lampa.Storage.get("use_kp_rating", false);
-    const useTomatoes = Lampa.Storage.get("use_tomatoes_rating", false);
-    const useMetacritic = Lampa.Storage.get("use_metacritic_rating", false);
-    const useTmdb = !useImdb && !useKp && !useTomatoes && !useMetacritic;
-
-    // Получаем рейтинги из данных
-    const ratings = data.ratings || {};
-
-    if (useKp && data.kp_rating) {
-      vote.html(getRatingHtml(data.kp_rating, icons["kp"].html));
-    } else if (useImdb && data.imdb_rating) {
-      vote.html(getRatingHtml(data.imdb_rating, icons["imdb"].html));
-    } else if (useTomatoes && ratings.rt) {
-      // Для Rotten Tomatoes
-      vote.html(getRatingHtml(ratings.rt, icons["tomatoes"].html));
-    } else if (useMetacritic && ratings.meta) {
-    // Для Metacritic убираем "/100"
-    const metaRating = ratings.meta.replace('/100', '');
-    vote.html(getRatingHtml(metaRating, icons["metacritic"].html));
-  } else if (useTmdb) {
-      vote.html(getRatingHtml(data.tmdb_rating || cur, icons["tmdb"].html));
-    }
-  }
-
-  function updateAllRatings() {
-    $(".card").each(function (i, c) {
-      updateCardRating($(c), $(c).data("card") || {});
-    });
-  }
-
-  function initCardListener() {
-    if (!window.lampa_listener_extensions) {
-      window.lampa_listener_extensions = true;
-      Object.defineProperty(window.Lampa.Card.prototype, "build", {
-        get: function () {
-          return this._build;
-        },
-        set: function (v) {
-          this._build = function () {
-            v.apply(this);
-            Lampa.Listener.send("card", { type: "build", object: this });
-          }.bind(this);
-        },
-      });
-    }
-    if (!window.imdb_vote_plugin) {
-      window.imdb_vote_plugin = true;
-      // --- Обработка карточек для загрузки рейтингов ---
-      Lampa.Listener.follow("card", async (event) => {
-        if (event.type !== "build") return;
-
-        const card = event.object;
-        const cardData = card.data || {};
-        const $cardElement = $(card.card);
-
-        // Получаем ID для загрузки рейтингов
-        const filmId = cardData.kinopoisk_id || null;
-        const imdbId =
-          cardData.imdb_id || (cardData.imdb && cardData.imdb.id) || null;
-
-        // Если есть imdbId, загружаем рейтинги из OMDb
-        if (imdbId) {
-          try {
-            const omdbData = await getFromOMDb(imdbId);
-            if (omdbData && omdbData.ratings) {
-              // Сохраняем рейтинги в данные карточки
-              if (!cardData.ratings) cardData.ratings = {};
-              Object.assign(cardData.ratings, omdbData.ratings);
-
-              // Обновляем отображение рейтинга на карточке
-              updateCardRating($cardElement, cardData);
-            }
-          } catch (e) {
-            console.log("Ошибка загрузки рейтингов для карточки:", e);
-          }
-        }
-
-        // Обновляем карточку с текущими данными
-        updateCardRating($cardElement, cardData);
-      });
-    }
-  }
-
-  function initFullContentListener() {
-    Lampa.Listener.follow("full", handleFullEvent);
-  }
-
-  function handleFullEvent(e) {
-    if (e.type === "complite" && e.data && e.data.movie) {
-      currentCardData = e.data.movie;
-      updateAllRatings();
-    }
-  }
-
   function start() {
     if (!window.Lampa || !window.Lampa.Listener || !window.Lampa.Card) return;
-    initCardListener();
-    initFullContentListener();
   }
 
   if (window.appready) {
@@ -783,56 +620,54 @@
     });
   }
 
-  let currentCardData = {};
+  function renderRatings(box, event = null) {
+    const rateLine = document.querySelector(".full-start-new__rate-line");
+    if (!rateLine) return;
 
-function renderRatings(box, event = null) {
-  const rateLine = document.querySelector(".full-start-new__rate-line");
-  if (!rateLine) return;
+    const movie = event?.data?.movie || {};
+    const card = event?.data?.card || {};
+    const fullData = (typeof Lampa.Full !== "undefined" && Lampa.Full.data) || {};
 
-  const movie = event?.data?.movie || {};
-  const card = event?.data?.card || {};
-  const fullData = (typeof Lampa.Full !== "undefined" && Lampa.Full.data) || {};
+    const combined = { ...fullData, ...card, ...movie };
+    const ratings = box?.ratings || {};
 
-  const combined = { ...fullData, ...card, ...movie };
-  const ratings = box?.ratings || {};
+    const tmdbRate = ratings.tmdb || combined.vote_average || combined.tmdb_rating || "—";
+    const kpRate = ratings.kp || combined.kp_rating || combined.rating_kp || "—";
+    const imdbRate = ratings.imdb || combined.imdb_rating || combined.rating_imdb || "—";
 
-  const tmdbRate = ratings.tmdb || combined.vote_average || combined.tmdb_rating || "—";
-  const kpRate = ratings.kp || combined.kp_rating || combined.rating_kp || "—";
-  const imdbRate = ratings.imdb || combined.imdb_rating || combined.rating_imdb || "—";
+    const addRate = (cls, value, iconHtml) => {
+      let el = rateLine.querySelector(`.${cls}`);
+      if (!el) {
+        el = document.createElement("div");
+        el.className = `full-start__rate ${cls}`;
 
-  const addRate = (cls, value, iconHtml) => {
-    let el = rateLine.querySelector(`.${cls}`);
-    if (!el) {
-      el = document.createElement("div");
-      el.className = `full-start__rate ${cls}`;
-
-      const pgElement = rateLine.querySelector(".full-start__pg");
-      if (pgElement) {
-        rateLine.insertBefore(el, pgElement);
-      } else {
-        rateLine.appendChild(el);
+        const pgElement = rateLine.querySelector(".full-start__pg");
+        if (pgElement) {
+          rateLine.insertBefore(el, pgElement);
+        } else {
+          rateLine.appendChild(el);
+        }
       }
+
+      el.innerHTML = `
+      <div style="width: max-content; padding: 0 0.2em;">${value}</div>
+      <div class="source--icon" style="width: max-content;">${iconHtml}</div>`;
+    };
+
+    addRate("rate--tmdb", tmdbRate, icons.tmdb?.html || "⚪");
+    addRate("rate--imdb", imdbRate, icons.imdb?.html || "🔵");
+    addRate("rate--kp", kpRate, icons.kp?.html || "🟡");
+
+    if (ratings.rt)
+      addRate("rate--rt", ratings.rt, icons.tomatoes?.html || "🍅");
+    if (ratings.meta) {
+      const metaRating = ratings.meta.replace('/100', '');
+      addRate("rate--meta", metaRating, icons.metacritic?.html || "🟢");
     }
-
-    el.innerHTML = `
-    <div style="width: max-content; padding: 0 0.7em;">${value}</div>
-    <div class="source--icon" style="width: max-content;">${iconHtml}</div>`;
-  };
-
-  addRate("rate--tmdb", tmdbRate, icons.tmdb?.html || "⚪");
-  addRate("rate--imdb", imdbRate, icons.imdb?.html || "🔵");
-  addRate("rate--kp", kpRate, icons.kp?.html || "🟡");
-
-  if (ratings.rt)
-    addRate("rate--rt", ratings.rt, icons.tomatoes?.html || "🍅");
-  if (ratings.meta) {
-    // Для Metacritic убираем "/100"
-    const metaRating = ratings.meta.replace('/100', '');
-    addRate("rate--meta", metaRating, icons.metacritic?.html || "🟢");
+    if (box.awards)
+      addRate("rate--awards", box.awards, icons.awards?.html || "🏆");
   }
-  if (box.awards)
-    addRate("rate--awards", box.awards, icons.awards?.html || "🏆");
-}
+
   function renderAwardsAccordionUI(awardsItems) {
     if (!awardsItems || !awardsItems.length) return;
 
@@ -843,14 +678,14 @@ function renderRatings(box, event = null) {
     container.className = "full-start-new__awards accordion-container";
 
     container.innerHTML = `
-    <div class="awards-header selector" data-nav="main">
-        <span>Все награды</span>
-        <span class="award-toggle"> ▶</span>
-    </div>
-    <div class="awards-content"></div>
-  `;
+      <div class="awards-header selector" data-nav="main">
+          <span>Все награды</span>
+          <span class="award-toggle"> ▶</span>
+      </div>
+      <div class="awards-content"></div>
+    `;
 
-    const tagsBlock = document.querySelector(".full-descr__tags");
+    const tagsBlock = document.querySelector(".full-descr__text");
     if (tagsBlock) tagsBlock.insertAdjacentElement("afterend", container);
 
     const contentEl = container.querySelector(".awards-content");
@@ -881,14 +716,14 @@ function renderRatings(box, event = null) {
         .join("");
 
       html += `
-      <div class="award-group">
-        <div class="award-header selector" data-nav="group" tabindex="-1">
-          <span>${translatedName} (${wins} побед, ${noms} номинаций)</span>
-          <span class="award-toggle"> ▶</span>
+        <div class="award-group">
+          <div class="award-header selector" data-nav="group" tabindex="-1">
+            <span>${translatedName} (${wins} побед, ${noms} номинаций)</span>
+            <span class="award-toggle"> ▶</span>
+          </div>
+          <ul class="award-items">${itemsHtml}</ul>
         </div>
-        <ul class="award-items">${itemsHtml}</ul>
-      </div>
-    `;
+      `;
     });
 
     contentEl.innerHTML = html;
@@ -1031,22 +866,22 @@ function renderRatings(box, event = null) {
     };
 
     container.innerHTML = `
-      <div class="box-office-line">
-        ${values
-          .map(
-            ([k, v]) =>
-              `<div class="box-office-item ${colors[k]}">${
-                k === "budget"
-                  ? "Бюджет"
-                  : k === "world"
-                  ? "Мир"
-                  : k === "usa"
-                  ? "США"
-                  : "Россия"
-              }: <b>${formatCurrency(v.amount, v.symbol)}</b></div>`
-          )
-          .join("")}
-      </div>`;
+        <div class="box-office-line">
+          ${values
+            .map(
+              ([k, v]) =>
+                `<div class="box-office-item ${colors[k]}">${
+                  k === "budget"
+                    ? "Бюджет"
+                    : k === "world"
+                    ? "Мир"
+                    : k === "usa"
+                    ? "США"
+                    : "Россия"
+                }: <b>${formatCurrency(v.amount, v.symbol)}</b></div>`
+            )
+            .join("")}
+        </div>`;
 
     detailsEl.parentNode.insertBefore(container, detailsEl);
 
@@ -1092,47 +927,18 @@ function renderRatings(box, event = null) {
   function registerSettings() {
     const DEFAULTS = {
       cache_ttl_days: 7,
-      cache_lru_limit: 300,
       omdb_apikey: "",
       kp_apikey: "",
     };
 
     Lampa.SettingsApi.addParam({
-      component: "rating_info",
+      component: "boxoffice_info",
       param: {
-        name: "rating",
-        type: "select",
-        values: {
-          tmdb: "TMDb ⚪",
-          imdb: "IMDb 🔵",
-          kp: "КиноПоиск 🟡",
-          tomatoes: "Rotten Tomatoes 🍅",
-          metacritic: "Metacritic 🟢",
-        },
-        default: "tmdb",
-      },
-      field: {
-        name: "Источник рейтинга",
-        description: "Выберите предпочитаемый источник рейтингов для карочки",
-      },
-      onChange: function (v) {
-        Lampa.Storage.set("use_imdb_rating", v === "imdb");
-        Lampa.Storage.set("use_kp_rating", v === "kp");
-        Lampa.Storage.set("use_tomatoes_rating", v === "tomatoes");
-        Lampa.Storage.set("use_metacritic_rating", v === "metacritic");
-        Lampa.Noty.show(`✅ Источник рейтинга: ${v}`);
-        updateAllRatings();
-      },
-    });
-
-    Lampa.SettingsApi.addParam({
-      component: "rating_info",
-      param: {
-        name: "kp_api_key",
+        name: "box_kp_api_key",
         type: "input",
         values: "",
         placeholder: "Введите API ключ КиноПоиска",
-        default: Lampa.Storage.get("kp_api_key", DEFAULTS.kp_apikey),
+        default: Lampa.Storage.get("box_kp_api_key", Lampa.Storage.get("kp_api_key", DEFAULTS.kp_apikey)),
       },
       field: {
         name: "Введите API ключ КиноПоиска",
@@ -1140,20 +946,20 @@ function renderRatings(box, event = null) {
       },
       onChange: (v) => {
         if (v) {
-          Lampa.Storage.set("kp_api_key", v);
+          Lampa.Storage.set("box_kp_api_key", v);
           Lampa.Noty.show(`✅ КиноПоиск API ключ сохранен`);
         }
       },
     });
 
     Lampa.SettingsApi.addParam({
-      component: "rating_info",
+      component: "boxoffice_info",
       param: {
-        name: "omdb_api_key",
+        name: "box_omdb_api_key",
         type: "input",
         values: "",
         placeholder: "Введите API ключ OMDB",
-        default: Lampa.Storage.get("omdb_api_key", DEFAULTS.omdb_apikey),
+        default: Lampa.Storage.get("box_omdb_api_key", Lampa.Storage.get("omdb_api_key", DEFAULTS.omdb_apikey)),
       },
       field: {
         name: "Введите API ключ OMDB",
@@ -1161,19 +967,19 @@ function renderRatings(box, event = null) {
       },
       onChange: (v) => {
         if (v) {
-          Lampa.Storage.set("omdb_api_key", v);
+          Lampa.Storage.set("box_omdb_api_key", v);
           Lampa.Noty.show(`✅ OMDb API ключ сохранен`);
         }
       },
     });
 
     Lampa.SettingsApi.addParam({
-      component: "rating_info",
+      component: "boxoffice_info",
       param: {
-        name: "cache_ttl_days",
+        name: "box_cache_ttl_days",
         type: "select",
         values: { 7: "7 дней", 14: "14 дней", 30: "30 дней" },
-        default: Lampa.Storage.get("cache_ttl_days", DEFAULTS.cache_ttl_days),
+        default: Lampa.Storage.get("box_cache_ttl_days", Lampa.Storage.get("cache_ttl_days", DEFAULTS.cache_ttl_days)),
       },
       field: {
         name: "TTL кэша (дни)",
@@ -1181,37 +987,14 @@ function renderRatings(box, event = null) {
       },
       onChange: (v) => {
         const days = parseInt(v, 10) || 7;
-        Lampa.Storage.set("cache_ttl_days", days);
+        Lampa.Storage.set("box_cache_ttl_days", days);
         Lampa.Noty.show(`✅ TTL кэша установлен: ${days} дней`);
       },
     });
 
     Lampa.SettingsApi.addParam({
-      component: "rating_info",
-      param: {
-        name: "cache_lru_limit",
-        type: "input",
-        values: "",
-        placeholder: "300",
-        default: String(
-          Lampa.Storage.get("cache_lru_limit", DEFAULTS.cache_lru_limit)
-        ),
-      },
-      field: {
-        name: "LRU лимит записей",
-        description:
-          "По умолчанию 300. Старые записи удаляются при переполнении.",
-      },
-      onChange: (v) => {
-        const num = Math.max(10, parseInt(v, 10) || DEFAULTS.cache_lru_limit);
-        Lampa.Storage.set("cache_lru_limit", num);
-        Lampa.Noty.show(`✅ Лимит LRU установлен: ${num} записей`);
-      },
-    });
-
-    Lampa.SettingsApi.addParam({
-      component: "rating_info",
-      param: { name: "clear_rating_cache", type: "button", values: "" },
+      component: "boxoffice_info",
+      param: { name: "clear_box_cache", type: "button", values: "" },
       field: {
         name: "🧹 Очистить кэш",
         description: "Полная очистка кэша рейтингов и сборов",
@@ -1225,8 +1008,8 @@ function renderRatings(box, event = null) {
     });
 
     Lampa.SettingsApi.addComponent({
-      component: "rating_info",
-      name: "Рейтинг",
+      component: "boxoffice_info",
+      name: "Box Office",
       icon: '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAAEeklEQVR4nO2dy4sdRRSHJ2JifAUNiaCJ/4D6F4S4ULIIuIiOIrgQFXeCCxeKogujYBInymBWgYAL0ZWaRSQiiuDOByZiBLNWxwg+ZxSCj/jJ0ZrQXLseXX3vPbcnvw9mM9V1qup8PVV9u6vvzM01AK4BngVOAr8hxoXl8kTI7dZmzpvJvwtYGVuTIsYyMN+W/L+jVcS4OXdeQph2dOZPn1/+nY7CvCR82GsCPnNqXMCJucT0s6N1tRadAXZGcrxiha10b0akiOZZAqaDBDgjAc5IgDMS4IwEOCMBzkiAMxLgjAQ4IwHOSIAzEuCMBDgjAc5IgDMS4IwEOCMBzkiAMxLgjAQ4IwFrVQCwATgAfAssAfvtd43y9cBCKLeffcDFHeKvH4n/vP0u0n7btvDTwFHgAeDqvuOZRQHWwVH2N8oPtpQf6BB/oaX+Qqb91IbYJ4BLa8dTSzTP0YLywHaWjLLUKP8ucmZeXhD7ssiLImcy7ef4BNhWM55aJikgWT+RhLsLYt/ZI36Or9sk5NqrJRq3b4O5+okEvF4Q+7Ue8Uv4GNjYZTy1ROP2bTBXPzH4s8CmRNyN4XWe2vilPN5lPLVE4/ZtMFc/M/h7EnH3pCqWtG/rDHALcCwR6ufm1VGuvVqicfs2mKtPmqOJuK+kKpa23zjuyUS4+7vG60o0bt8Gc/VJc7ZtGgIuCZeMUWoSlvhLeLOgvx8CP4arsi+AReCmoQsw7m2JeRsZKgXcGjn8dIf+NvkLOFTyQS3azxkQcKwl5ssTEnBl5PCVSgGrvJeTEO3nDAj4Hbhq5NbDT5MQMKb+xnhpqAJGF8HdFDCDAmw6unGoAo43jj8yUAHGi0MV8Aew2e6SAt/PqIC37NYFsN1OmMgxp4YqwHgQ2EUhDgK2N465PreYD1HAO8DhWRXQNc4QBfwJ/FB6sASMX0AnJGCAAoBNkcOXNQVNR0D1rYiuU2/x8V0Dde1IrNweK1L24aYqfqSvdinZxhsXooBD5Hm/Nn5LP59KtHPfhXgZejN5HqqNH8quCNNO7MxffSDTvBcV43j4EGbJf3stfBC7CPgm88V21/aIX8qjJeMp5OBgBISyxcRgPugpuISPSh/KF65XNwxNwI7EgB6esICvgOtKx1PAYlWeprAxK1oOrAuJaJt+tvWIX3Lm/y/5PeK929wuOW0BbVv59nUof6Sl/NWe8VML7mP2zLnjeFK3TxZzyZ+0gA2h00uRzbm58nVhx8KZ8CD+SHPbYsf4o/wKfGkP3e1Ss3m1Uzge26D7XNjf+nn4hkmLeQp4ITXnT02AKEMCnJEAZyTAGQlwRgKckQBnJMAZCXBGApyRAGckwBkJcEYCnJEAZyTAGQlwRgKckQBnJMAZCXBGApyRAGckwBkJcEYCnJEAZyRghgXE/qX5Tu9OrxUSr2MtW+HJmB0xcT41Ac9Mvh0R4WkTsDX1/ZxiYti7EFtW56j58FqQmA6W69tHF4r53FdFirFgOb4jtlpvAfba4hBexRGMBbvStJxabv+bdgL/AJMbblfhELaMAAAAAElFTkSuQmCC" alt="rating-icon"><style>.rating-icon { color: white; }</style>',
     });
   }
