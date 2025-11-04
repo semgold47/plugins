@@ -215,7 +215,7 @@
   }
   function setFullCardText(renderEl, text) {
     if (!renderEl) return;
-    var rate = $(".full-start-new__details", renderEl);
+    var rate = $(".full-start-new__rate-line", renderEl);
     if (!rate.length) return;
     rate.css("visibility", "hidden");
     var el = $(".full-start__status", renderEl);
