@@ -50,7 +50,7 @@
   // ---- CSS ----
   var styleQUALITY =
     '<style id="lampa_quality_styles">' +
-    ".my-quality{min-width:2.8em;text-align:center;border:1.1px solid " +
+    ".my-quality{width: 10.5em;" +
     allQUALITY_CONFIG.DISPLAY.FULL_CARD.BORDER_COLOR +
     " !important;color:" +
     allQUALITY_CONFIG.DISPLAY.FULL_CARD.TEXT_COLOR +
@@ -218,7 +218,7 @@
     var rate = $(".full-start-new__rate-line", renderEl);
     if (!rate.length) return;
     rate.css("visibility", "hidden");
-    var el = $(".full-start__status.my-quality", renderEl);
+    var el = $(".full-start__status", renderEl);
     if (el.length) el.text(text).removeClass("my-loading");
     else
       rate.append(
