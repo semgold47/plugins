@@ -50,8 +50,6 @@
   // ---- CSS ----
   var styleQUALITY =
     '<style id="lampa_quality_styles">' +
-    ".full-start-new__rate-line{visibility:hidden;gap:.4em 0}" +
-    ".full-start-new__rate-line>*{margin-right:.5em!important;flex:0 0 auto}" +
     ".my-quality{min-width:2.8em;text-align:center;border:1.1px solid " +
     allQUALITY_CONFIG.DISPLAY.FULL_CARD.BORDER_COLOR +
     " !important;color:" +
