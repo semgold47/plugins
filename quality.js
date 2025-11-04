@@ -218,11 +218,11 @@
     var rate = $(".full-start-new__rate-line", renderEl);
     if (!rate.length) return;
     rate.css("visibility", "hidden");
-    var el = $(".full-start__status", renderEl);
+    var el = $(".full-start-new__details", renderEl);
     if (el.length) el.text(text).removeClass("my-loading");
     else
       rate.append(
-        '<div class="full-start__status my-quality">' + text + "</div>"
+        '<div class="full-start-new__details my-quality">' + text + "</div>"
       );
     rate.css("visibility", "visible");
   }
