@@ -481,7 +481,7 @@ document.head.appendChild(style);
       html: '<img src="https://semgold47.github.io/plugins/kp.svg" class="rating-icon"/>',
     },
     kp_rating: {
-      html: '<img src="https://semgold47.github.io/plugins/kp.svg" class="rating-icon"/>' class="rating-icon"  width="35" style="object-fit: contain"/>',
+      html: '<img src="https://semgold47.github.io/plugins/kp.svg" class="rating-icon" style="object-fit: contain"/>',
     },
     tomatoes: { html: '<img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Rotten_Tomatoes_logo.svg" class="rating-icon"  style=" width: 1.5em; object-fit: contain;"/>', },
     rtRating: { html: '<img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Rotten_Tomatoes_logo.svg" class="rating-icon"  style=" width: 1.5em; object-fit: contain;"/>', },
