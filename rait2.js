@@ -425,7 +425,7 @@
   };
 
   // --- API ключи ---
-  const OMDB_API_KEY = Lampa.Storage.get("omdb_api_key", "");
+  const OMDB_API_KEY = Lampa.Storage.get("omdbapi_key", "");
   const KP_API_KEY = Lampa.Storage.get("box_kp_api_key", Lampa.Storage.get("kp_api_key", ""));
   // --- Кэш ---
   const CACHE_KEY = "rait_boxoffice_cache_v2";
@@ -955,11 +955,11 @@
     Lampa.SettingsApi.addParam({
       component: "boxoffice_info",
       param: {
-        name: "omdb_api_key",
+        name: "omdbapi_key",
         type: "input",
         values: "",
         placeholder: "Введите API ключ OMDB",
-        default: Lampa.Storage.get("omdb_api_key", Lampa.Storage.get("omdb_api_key", DEFAULTS.omdb_apikey)),
+        default: Lampa.Storage.get("omdbapi_key", Lampa.Storage.get("omdbapi_key", DEFAULTS.omdb_apikey)),
       },
       field: {
         name: "Введите API ключ OMDB",
