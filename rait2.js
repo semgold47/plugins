@@ -967,7 +967,7 @@
       },
       onChange: (v) => {
         if (v) {
-          Lampa.Storage.set("box_omdb_api_key", v);
+          Lampa.Storage.set("omdbapi_key", v);
           Lampa.Noty.show(`✅ OMDb API ключ сохранен`);
         }
       },
