@@ -5,7 +5,6 @@
   // --- Функция перевода наград с английского на русский ---
   function translateAwards(awardsText) {
     if (!awardsText) return awardsText;
-
     let translated = awardsText
       .replace(/(\d+) wins?/g, (match, num) => {
         const n = parseInt(num);
@@ -78,8 +77,8 @@
       awardsText.includes("nomination")
     ) {
       const nominatedMatch = awardsText.match(
-        /Nominated for (\d+) ([^\.]+)\.?\s*(\d+)\s*wins?\s*&\s*(\d+)\s*nominations?\s*total/
-      );
+       /Nominated for (\d+) ([^\.]+)\.?\s*(\d+)\s*wins?\s*&\s*(\d+)\s*nominations?/
+       );
       if (nominatedMatch) {
         const [_, numAwards, awardType, wins, nominations] = nominatedMatch;
         const nAwards = parseInt(numAwards);
@@ -117,7 +116,7 @@
           nominationsText = `${nominations} номинации`;
         else nominationsText = `${nominations} номинаций`;
 
-        translated = `${awardText}. ${winsText} и ${nominationsText} всего`;
+        translated = `${awardText}. ${winsText} и ${nominationsText}`;
       }
     }
 
@@ -126,9 +125,9 @@
       awardsText.includes("win") &&
       awardsText.includes("nomination")
     ) {
-      const wonMatch = awardsText.match(
-        /Won (\d+) ([^\.]+)\.?\s*(\d+)\s*wins?\s*&\s*(\d+)\s*nominations?\s*total/
-      );
+	const wonMatch = awardsText.match(
+	  /Won (\d+) ([^\.]+)\.?\s*(\d+)\s*wins?\s*&\s*(\d+)\s*nominations?/
+	);
       if (wonMatch) {
         const [_, numAwards, awardType, wins, nominations] = wonMatch;
         const nAwards = parseInt(numAwards);
@@ -165,7 +164,7 @@
           nominationsText = `${nominations} номинации`;
         else nominationsText = `${nominations} номинаций`;
 
-        translated = `${awardText}. ${winsText} и ${nominationsText} всего`;
+        translated = `${awardText}. ${winsText} и ${nominationsText}`;
       }
     }
 
@@ -184,24 +183,36 @@
     return awardMap[name] || name;
   }
 
-  const style = document.createElement("style");
-  style.textContent = `
+const style = document.createElement("style");
+style.textContent = `
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
   .full-start-new__box-office {
     width: 100%;
     overflow: hidden;
     margin-top: 0.6em;
+    line-height: 1.2;
   }
 
+
   .full-start-new__box-office .box-office-line {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    gap: 0.25em;
-    margin-bottom: 0.2em;
-    font-size: 1.05em;
-    overflow-x: auto;
-    scrollbar-width: none;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0.25em;
+  margin-bottom: 0.2em;
+  font-size: 1.05em;
+  overflow-x: auto;
+  scrollbar-width: none;
+  
+  /* Для больших экранов/телевизоров - перенос строк */
+  @media (min-width: 900px) {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    }
   }
   .full-start-new__box-office .box-office-line::-webkit-scrollbar {
     display: none;
@@ -214,24 +225,12 @@
     text-align: center;
     white-space: nowrap;
     min-width: fit-content;
-    opacity: 0.8;
-    transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.25s ease;
+   
   }
 
-
-  /* Hover / Focus (TV) */
-  .full-start-new__box-office .box-office-item:hover,
-  .full-start-new__box-office .box-office-item.focus {
-    transform: scale(1.05);
-    opacity: 1;
-    box-shadow: 0 0 0.6em rgba(255,255,255,0.4);
-    z-index: 10;
-  }
-
-  /* Цвета */
-  .box-office-item.budget { background: #207fd1c4; }
-  .box-office-item.world  { background: #1e9e45; }
-  .box-office-item.usa    { background: #bb9a4ad6; }
+  .box-office-item.budget { background: #207ed194; }
+  .box-office-item.world  { background: #1e9e448f; }
+  .box-office-item.usa    { background: #ad7a0498; }
   .box-office-item.russia { background: #642e9385; }
 
   .full-start__rate {
@@ -239,31 +238,36 @@
     max-width: 100%;
     min-width: min-content;
     margin-right: 0.2em !important;
-    opacity: 0.8;
+
   }
 
   .full-start-new__rate-line {
     margin-bottom: 0.2em;
-    margin-top: 0.2em;
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.2em 0;
-    width: 100%;
+  // width: 70%;
     overflow-x: auto;
+    gap: 0.2em 0;
+    flex-wrap: nowrap;
+    
+    /* Для телевизоров/больших экранов */
+    @media (min-width: 900px) {
+      flex-wrap: wrap;
+      overflow-x: visible;
+      width: 66%;
+    }
   }
-
   .rate--awards {
-    display: flex;
-    align-items: center;
     width: max-content;
-    background: #97c939d6;
+    background: #97c93952;
   }
-
+  .full-start__status {
+  white-space: nowrap;
+  }
   .rate--awards > div:first-child {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    
+        background: none;
   }
 
   .source--icon {
@@ -271,25 +275,21 @@
     width: max-content;
   }
 
-  .rate--imdb  { background: #bb9a4ad6; }
-  .rate--rt    { background: #7b2716cf; }
-  .rate--meta  { background: #66c2a5; }
+  .rate--imdb  { background: #bb994aa2; }
+  .rate--rt    { background: #7b2716a9; }
+  .rate--meta  { background: #66c2a582; }
   .rate--kp    { background: #642e9385; }
-  .rate--tmdb  { background: #197993bf; }
+  .rate--tmdb  { background: #1978938f; }
 
-
-  /* ===================== НАГРАДЫ ===================== */
   .full-start-new__awards {
     display: flex;
     flex-direction: column;
-    align-items: stretch;
     background-color: rgba(0, 0, 0, 0.05);
     border-radius: 1em;
     padding: 0.2em;
     overflow: hidden;
   }
 
-  /* Заголовок блока */
   .full-start-new__awards .awards-header {
     display: flex;
     justify-content: space-between;
@@ -299,16 +299,13 @@
     border-radius: 0.5em;
     color: #fff;
     background-color: rgba(255,255,255,0.05);
-    transition: all 0.25s ease;
     font-size: 1.6em;
     font-weight: 400;
     box-shadow: 0 0 0.4em rgba(255,255,255,0.5);
   }
 
-  /* Контент */
   .full-start-new__awards .awards-content {
     overflow: hidden;
-    transition: height 0.4s ease;
     margin-top: 0.3em;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 0.5em;
@@ -319,7 +316,6 @@
     overflow: hidden;
   }
 
-  /* Заголовок подгруппы */
   .full-start-new__awards .award-header {
     display: flex;
     justify-content: space-between;
@@ -329,76 +325,23 @@
     background-color: rgba(0,0,0,0.3);
     border-radius: 0.5em;
     color: #fff;
-    transition: all 0.2s ease;
   }
 
-  /* Список наград */
   .full-start-new__awards .award-items {
     margin: 0 0 0.4em 0.4em;
     padding-left: 0;
     color: #fff;
     overflow: hidden;
-    transition: height 0.3s ease;
     font-size: 1.2em;
     font-weight: 600;
   }
 
-  /* Треугольник-переключатель */
   .award-toggle {
     font-weight: bold;
     color: #999;
-    transition: transform 0.3s ease, color 0.2s ease;
   }
-
-
-  .full-start-new__awards .selector {
-    outline: none;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    background-color: rgba(0, 0, 0, 0.3);
-  }
-
-  .full-start-new__awards .selector.focus,
-  .full-start-new__awards .selector.hover {
-    background-color: rgba(255,255,255,0.9) !important;
-    box-shadow: 0 0 0.3em rgba(255,255,255,0.4);
-  }
-
-  .full-start-new__awards .selector.focus span,
-  .full-start-new__awards .selector.hover span {
-    color: #000 !important;
-    font-weight: bold;
-  }
-
-  .full-start-new__awards .selector.focus .award-toggle,
-  .full-start-new__awards .selector.hover .award-toggle {
-    color: #000 !important;
-  }
-
-  /* ===================== АНИМАЦИИ / СОСТОЯНИЯ ===================== */
-  .full-start-new__awards .awards-content[style*="height: 0"],
-  .full-start-new__awards .award-items[style*="height: 0"] {
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  .full-start-new__awards .awards-content.auto-height,
-  .full-start-new__awards .award-items.auto-height {
-    height: auto !important;
-    overflow: visible;
-  }
-
-  .full-start-new__awards .awards-content.resizing,
-  .full-start-new__awards .award-items.resizing {
-    transition: none;
-  }
-
-  * {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  `;
-  document.head.appendChild(style);
+`;
+document.head.appendChild(style);
 
   // --- Иконки ---
   var icons = {
@@ -610,7 +553,112 @@
     return data;
   }
 
-    function renderRatings(box, event = null) {
+  const CACHE_KEYS = {
+      combined: "rait_boxoffice_cache_v2",
+      tmdb: "tmdb_id_mapping"
+  };
+
+  // Инициализация улучшенного кэша
+  let combinedCache = JSON.parse(localStorage.getItem(CACHE_KEYS.combined) || "{}");
+  let cacheQueue = Object.keys(combinedCache).sort((a, b) => combinedCache[a].timestamp - combinedCache[b].timestamp); // Initial queue
+
+  function saveCombinedCache() {
+      localStorage.setItem(CACHE_KEYS.combined, JSON.stringify(combinedCache));
+  }
+
+  function cleanupCombinedCache() {
+      const now = Date.now();
+      const ttlDays = Lampa.Storage.get("cache_ttl_days", 7);
+      const ttlMs = ttlDays * 24 * 60 * 60 * 1000;
+      const lruLimit = Lampa.Storage.get("cache_lru_limit", 300);
+
+      // Удаляем устаревшие записи
+      cacheQueue = cacheQueue.filter(key => {
+          if (now - combinedCache[key].timestamp > ttlMs) {
+              delete combinedCache[key];
+              return false;
+          }
+          return true;
+      });
+
+      // LRU cleanup если превышен лимит
+      while (cacheQueue.length > lruLimit) {
+          const oldestKey = cacheQueue.shift();
+          delete combinedCache[oldestKey];
+      }
+
+      saveCombinedCache();
+  }
+
+  // Инициализация очистки кэша
+  cleanupCombinedCache();
+
+    // Универсальные функции кэширования (совместимые с вашей системой)
+  const cacheManager = {
+      get: (imdbId) => {
+          // Сначала проверяем улучшенный кэш
+          const entry = combinedCache[imdbId];
+          if (entry) {
+              const ttlDays = Lampa.Storage.get("cache_ttl_days", 7);
+              const ttlMs = ttlDays * 24 * 60 * 60 * 1000;
+              
+              if (Date.now() - entry.timestamp < ttlMs) {
+                  return entry.data;
+              } else {
+                  delete combinedCache[imdbId];
+                  cacheQueue = cacheQueue.filter(k => k !== imdbId);
+                  saveCombinedCache();
+              }
+          }
+          
+          // Затем проверяем старый кэш для совместимости
+          const oldData = getCache(`omdb_${imdbId}`);
+          if (oldData) {
+              // Преобразуем старые ключи в новые
+              return {
+                  tomatoes: oldData.rtRating,
+                  metacritic: oldData.metacriticRating,
+                  oscars: oldData.oscars,
+                  emmy: oldData.emmy,
+                  awards: oldData.awards,
+                  nominations: oldData.avg
+              };
+          }
+          
+          return null;
+      },
+    
+      set: (imdbId, data, ttlMs = null) => {
+          if (!data || !imdbId) return;
+          
+          // Сохраняем в улучшенный кэш
+          const existing = combinedCache[imdbId]?.data || {};
+          combinedCache[imdbId] = {
+              timestamp: Date.now(),
+              data: { ...existing, ...data }
+          };
+          
+          // Также сохраняем в старый кэш для совместимости с плагинами
+          const oldFormatData = {
+              rtRating: data.tomatoes,
+              metacriticRating: data.metacritic,
+              oscars: data.oscars,
+              emmy: data.emmy,
+              awards: data.awards,
+              avg: data.nominations
+          };
+          setCache(`omdb_${imdbId}`, oldFormatData);
+          
+          // Обновляем очередь LRU
+          cacheQueue = cacheQueue.filter(k => k !== imdbId);
+          cacheQueue.push(imdbId);
+          
+          // Автоматическая очистка при добавлении
+          cleanupCombinedCache();
+      }
+  };
+
+  function renderRatings(box, event = null) {
     const rateLine = document.querySelector(".full-start-new__rate-line");
     if (!rateLine) return;
 
@@ -618,12 +666,48 @@
     const card = event?.data?.card || {};
     const fullData = (typeof Lampa.Full !== "undefined" && Lampa.Full.data) || {};
     const combined = { ...fullData, ...card, ...movie };
-    const ratings = box?.ratings || {};
-    const tmdbRate = ratings.tmdb || combined.vote_average || combined.tmdb_rating || "—";
-    const kpRate = ratings.kp || combined.kp_rating || combined.rating_kp || "—";
-    const imdbRate = ratings.imdb || combined.imdb_rating || combined.rating_imdb || "—";
+    const imdbId = combined.imdb_id || combined.imdbID || combined.imdb || null;
 
+    // Проверяем наличие кэша
+    let cached = null;
+    if (imdbId) cached = cacheManager.get(imdbId);
+
+    // Получаем рейтинги (если есть в box или кэше)
+    const ratings = box?.ratings || {};
+    const cacheRatings = cached || {};
+
+    const tmdbRate =
+      ratings.tmdb ||
+      combined.vote_average ||
+      combined.tmdb_rating ||
+      "—";
+
+    const kpRate =
+      ratings.kp ||
+      combined.kp_rating ||
+      combined.rating_kp ||
+      "—";
+
+    const imdbRate =
+      ratings.imdb ||
+      combined.imdb_rating ||
+      combined.rating_imdb ||
+      "—";
+
+    // Смотрим, есть ли доп. источники рейтингов из кэша
+    const rtRate = ratings.rt || cacheRatings.tomatoes || null;
+    const metaRate = ratings.meta || cacheRatings.metacritic || null;
+    const awards =
+      box.awards ||
+      cacheRatings.awards ||
+      cacheRatings.oscars ||
+      cacheRatings.emmy ||
+      null;
+
+    // Универсальная функция добавления блока рейтинга
     const addRate = (cls, value, iconHtml) => {
+      if (value === null || value === undefined) return;
+
       let el = rateLine.querySelector(`.${cls}`);
       if (!el) {
         el = document.createElement("div");
@@ -638,23 +722,39 @@
       }
 
       el.innerHTML = `
-      <div style="width: max-content; padding: 0 0.2em;">${value}</div>
-      <div class="source--icon" style="width: max-content;">${iconHtml}</div>`;
+        <div style="width: max-content; padding: 0 0.2em;">${value}</div>
+        <div class="source--icon" style="width: max-content;">${iconHtml}</div>`;
     };
 
+    // Добавляем базовые рейтинги
     addRate("rate--tmdb", tmdbRate, icons.tmdb?.html || "⚪");
     addRate("rate--imdb", imdbRate, icons.imdb?.html || "🔵");
     addRate("rate--kp", kpRate, icons.kp?.html || "🟡");
 
-    if (ratings.rt)
-      addRate("rate--rt", ratings.rt, icons.tomatoes?.html || "🍅");
-    if (ratings.meta) {
-      const metaRating = ratings.meta.replace('/100', '');
+    // Добавляем дополнительные, если есть
+    if (rtRate)
+      addRate("rate--rt", rtRate, icons.tomatoes?.html || "🍅");
+
+    if (metaRate) {
+      const metaRating = metaRate.toString().replace("/100", "");
       addRate("rate--meta", metaRating, icons.metacritic?.html || "🟢");
     }
-    if (box.awards)
-      addRate("rate--awards", box.awards, icons.awards?.html || "🏆");
+
+    if (awards)
+  //    addRate("rate--awards", awards, icons.awards?.html || "🏆");
+  addRate("rate--awards", awards,"");
+
+    // Если получили рейтинги — сохраняем их в кэш
+    if (imdbId) {
+      const toCache = {
+        tomatoes: rtRate,
+        metacritic: metaRate,
+        awards: awards,
+      };
+      cacheManager.set(imdbId, toCache);
+    }
   }
+
 
   function renderAwardsAccordionUI(awardsItems) {
     if (!awardsItems || !awardsItems.length) return;
@@ -1013,5 +1113,6 @@
       icon: '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAAEeklEQVR4nO2dy4sdRRSHJ2JifAUNiaCJ/4D6F4S4ULIIuIiOIrgQFXeCCxeKogujYBInymBWgYAL0ZWaRSQiiuDOByZiBLNWxwg+ZxSCj/jJ0ZrQXLseXX3vPbcnvw9mM9V1qup8PVV9u6vvzM01AK4BngVOAr8hxoXl8kTI7dZmzpvJvwtYGVuTIsYyMN+W/L+jVcS4OXdeQph2dOZPn1/+nY7CvCR82GsCPnNqXMCJucT0s6N1tRadAXZGcrxiha10b0akiOZZAqaDBDgjAc5IgDMS4IwEOCMBzkiAMxLgjAQ4IwHOSIAzEuCMBDgjAc5IgDMS4IwEOCMBzkiAMxLgjAQ4IwFrVQCwATgAfAssAfvtd43y9cBCKLeffcDFHeKvH4n/vP0u0n7btvDTwFHgAeDqvuOZRQHWwVH2N8oPtpQf6BB/oaX+Qqb91IbYJ4BLa8dTSzTP0YLywHaWjLLUKP8ucmZeXhD7ssiLImcy7ef4BNhWM55aJikgWT+RhLsLYt/ZI36Or9sk5NqrJRq3b4O5+okEvF4Q+7Ue8Uv4GNjYZTy1ROP2bTBXPzH4s8CmRNyN4XWe2vilPN5lPLVE4/ZtMFc/M/h7EnH3pCqWtG/rDHALcCwR6ufm1VGuvVqicfs2mKtPmqOJuK+kKpa23zjuyUS4+7vG60o0bt8Gc/VJc7ZtGgIuCZeMUWoSlvhLeLOgvx8CP4arsi+AReCmoQsw7m2JeRsZKgXcGjn8dIf+NvkLOFTyQS3azxkQcKwl5ssTEnBl5PCVSgGrvJeTEO3nDAj4Hbhq5NbDT5MQMKb+xnhpqAJGF8HdFDCDAmw6unGoAo43jj8yUAHGi0MV8Aew2e6SAt/PqIC37NYFsN1OmMgxp4YqwHgQ2EUhDgK2N465PreYD1HAO8DhWRXQNc4QBfwJ/FB6sASMX0AnJGCAAoBNkcOXNQVNR0D1rYiuU2/x8V0Dde1IrNweK1L24aYqfqSvdinZxhsXooBD5Hm/Nn5LP59KtHPfhXgZejN5HqqNH8quCNNO7MxffSDTvBcV43j4EGbJf3stfBC7CPgm88V21/aIX8qjJeMp5OBgBISyxcRgPugpuISPSh/KF65XNwxNwI7EgB6esICvgOtKx1PAYlWeprAxK1oOrAuJaJt+tvWIX3Lm/y/5PeK929wuOW0BbVv59nUof6Sl/NWe8VML7mP2zLnjeFK3TxZzyZ+0gA2h00uRzbm58nVhx8KZ8CD+SHPbYsf4o/wKfGkP3e1Ss3m1Uzge26D7XNjf+nn4hkmLeQp4ITXnT02AKEMCnJEAZyTAGQlwRgKckQBnJMAZCXBGApyRAGckwBkJcEYCnJEAZyTAGQlwRgKckQBnJMAZCXBGApyRAGckwBkJcEYCnJEAZyRghgXE/qX5Tu9OrxUSr2MtW+HJmB0xcT41Ac9Mvh0R4WkTsDX1/ZxiYti7EFtW56j58FqQmA6W69tHF4r53FdFirFgOb4jtlpvAfba4hBexRGMBbvStJxabv+bdgL/AJMbblfhELaMAAAAAElFTkSuQmCC" alt="rating-icon"><style>.rating-icon { color: white; }</style>',
     });
   }
+
   registerSettings();
 })();
