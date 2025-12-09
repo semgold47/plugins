@@ -2,7 +2,7 @@
   "use strict";
   var allQUALITY_CONFIG = {
     CACHE_VERSION: 2,
-    LOGGING: { GENERAL: false, QUALITY: true, CARDLIST: false },
+    LOGGING: { GENERAL: true, QUALITY: true, CARDLIST: false },
     CACHE: {
       VALID_TIME_MS: 3 * 24 * 60 * 60 * 1000,
       REFRESH_THRESHOLD_MS: 12 * 60 * 60 * 1000,
@@ -10,105 +10,88 @@
     },
     JACRED: {
       PROTOCOL: "https://",
-      URL: "jacred.xyz",
-      API_KEY: "",
+      HOST: "jacred.xyz",
+      API_PATH: "/api/v1.0/torrents",
       PROXY_LIST: [
-        "http://cors.bwa.workers.dev/",
-        "https://corsproxy.io/?",
+        "https://api.codetabs.com/v1/proxy?quest=",
+        "https://cors.convertapi.com/",
+        "https://cors.bridged.cc/",
         "https://api.allorigins.win/raw?url=",
-        "https://yacdn.org/proxy/",
-        "https://cors-anywhere.herokuapp.com/",
-        "https://thingproxy.freeboard.io/fetch/",
+        "https://corsproxy.io/?",
+        "https://proxy.cors.sh/",
       ],
-      TIMEOUT_MS: 3000,
+      TIMEOUT_MS: 15000,
     },
     DISPLAY: {
       SHOW_QUALITY_FOR_TV_SERIES: true,
-      FULL_CARD: {
-        BORDER_COLOR: "#fffacd00",
-        TEXT_COLOR: "#FFFFFF",
-        FONT_WEIGHT: "normal",
-        FONT_SIZE: "1.2em",
-        FONT_STYLE: "",
-      },
     },
     MANUAL_OVERRIDES: {
-      90802: { quality_code: 2160, full_label: "4K Web-DLRip" },
-      20873: { quality_code: 2160, full_label: "4K BDRip" },
-      1128655: { quality_code: 2160, full_label: "4K Web-DL" },
-      46010: { quality_code: 1080, full_label: "1080 Web-DLRip" },
-      9564: { quality_code: 1080, full_label: "1080 BDRemux" },
-      32334: { quality_code: 1080, full_label: "1080 Web-DLRip" },
-      21028: { quality_code: 1080, full_label: "1080 BDRemux" },
-      20932: { quality_code: 1080, full_label: "1080 HDTVRip" },
-      57778: { quality_code: 2160, full_label: "4K Web-DL" },
-      20977: { quality_code: 1080, full_label: "HDTVRip-AVC" },
-      33645: { quality_code: 720, full_label: "720p HDTVRip" },
+        // 4K releases
+        90802: { quality_code: 2160, full_label: "4K Web-DLRip" },
+        20873: { quality_code: 2160, full_label: "4K BDRip" },
+        1128655: { quality_code: 2160, full_label: "4K Web-DL" },
+        57778: { quality_code: 2160, full_label: "4K Web-DL" },
+        22101: { quality_code: 2160, full_label: "4K BluRay" },
+        43001: { quality_code: 2160, full_label: "4K BDRemux" },
+        52002: { quality_code: 2160, full_label: "4K Hybrid" },
+        
+        // 1080p releases
+        9564: { quality_code: 1080, full_label: "1080 BDRemux" },
+        21028: { quality_code: 1080, full_label: "1080 BDRemux" },
+        46010: { quality_code: 1080, full_label: "1080 Web-DLRip" },
+        32334: { quality_code: 1080, full_label: "1080 Web-DLRip" },
+        20932: { quality_code: 1080, full_label: "1080 HDTVRip" },
+        20977: { quality_code: 1080, full_label: "HDTVRip-AVC" },
+        12801: { quality_code: 1080, full_label: "1080 BluRay" },
+        15501: { quality_code: 1080, full_label: "1080 WEB-DL" },
+        18902: { quality_code: 1080, full_label: "1080 WEBRip" },
+        23001: { quality_code: 1080, full_label: "1080 Hybrid" },
+        
+        // 720p releases
+        33645: { quality_code: 720, full_label: "720p HDTVRip" },
+        10201: { quality_code: 720, full_label: "720p BluRay" },
+        13201: { quality_code: 720, full_label: "720p WEB-DL" },
+        17501: { quality_code: 720, full_label: "720p WEBRip" },
+        21001: { quality_code: 720, full_label: "720p HDTV" },
+        
+        // SD releases
+        801: { quality_code: 480, full_label: "DVD Rip" },
+        901: { quality_code: 480, full_label: "WEB-DL" },
+        1101: { quality_code: 480, full_label: "WEBRip" },
+        1201: { quality_code: 480, full_label: "HDTV" },
+        
+        // Special cases
+        500: { quality_code: 0, full_label: "CAM" },
+        600: { quality_code: 0, full_label: "TS" },
+        700: { quality_code: 0, full_label: "SCR" },
     },
   };
 
   // ---- CSS ----
-  var styleQUALITY =
+  var styleQUALITY = 
     '<style id="lampa_quality_styles">' +
-    ".my-quality{width: 10.5em;" +
-    allQUALITY_CONFIG.DISPLAY.FULL_CARD.BORDER_COLOR +
-    " !important;color:" +
-    allQUALITY_CONFIG.DISPLAY.FULL_CARD.TEXT_COLOR +
-    ";font-weight:" +
-    allQUALITY_CONFIG.DISPLAY.FULL_CARD.FONT_WEIGHT +
-    ";font-size:" +
-    allQUALITY_CONFIG.DISPLAY.FULL_CARD.FONT_SIZE +
-    ";font-style:" +
-    allQUALITY_CONFIG.DISPLAY.FULL_CARD.FONT_STYLE +
-    ";border-radius:.3em!important;padding:.2em .8em!important;background:rgba(0,0,0,.3)}" +
     ".card__view{position:relative!important}" +
     ".card__quality{position:absolute!important; background:rgba(26,26,23,.61)!important;z-index:10;font-size:.7em;max-width:calc(100% - 1em)!important;border-radius:1.3em!important;border:1.1px solid #fff!important;padding:.2em .2em}" +
     ".card__quality div{text-transform:uppercase!important;font-family:'Roboto Condensed','Arial Narrow',Arial,sans-serif!important;font-weight:700!important;letter-spacing:.5px!important;font-size:1.1em!important;color:#fff;padding:.1em .5em .08em .4em!important;white-space:nowrap;text-shadow:.5px .5px 1px rgba(0,0,0,.3)!important}" +
-    ".my-loading{opacity:.7}" +
     "</style>";
-  if (!document.getElementById("lampa_quality_styles"))
-    $("body").append(styleQUALITY);
+  
+  if (!document.getElementById("lampa_quality_styles")) {
+    document.head.insertAdjacentHTML('beforeend', styleQUALITY);
+  }
 
   // ---- утилиты ----
-  var MAP = {
-    "2160p": "4K",
-    "4k": "4K",
-    "4к": "4K",
-    "1080p": "1080p",
-    1080: "1080p",
-    "720p": "720p",
-    "480p": "SD",
-    480: "SD",
-    "web-dl": "Web-DL",
-    webrip: "WEBRip",
-    "web-dlrip": "WEB-DLRip",
-    bluray: "BluRay",
-    bdrip: "BDRip",
-    bdremux: "BDRemux",
-    hdtv: "HDTV",
-    hdrip: "HDRip",
-    dvdrip: "DVDRip",
-    camrip: "CAMRip",
-    ts: "TS",
-    telesync: "TS",
-    telecine: "TC",
-  };
-
   function getCardType(c) {
     var t = c.media_type || c.type;
-    return t === "movie" || t === "tv"
-      ? t
-      : c.name || c.original_name
-      ? "tv"
-      : "movie";
+    return t === "movie" || t === "tv" ? t : 
+           (c.name || c.original_name) ? "tv" : "movie";
   }
+
   function getCache(k) {
     var c = Lampa.Storage.get(allQUALITY_CONFIG.CACHE.KEY) || {};
     var i = c[k];
-    return i && Date.now() - i.timestamp < allQUALITY_CONFIG.CACHE.VALID_TIME_MS
-      ? i
-      : null;
+    return i && Date.now() - i.timestamp < allQUALITY_CONFIG.CACHE.VALID_TIME_MS ? i : null;
   }
+
   function setCache(k, d) {
     var c = Lampa.Storage.get(allQUALITY_CONFIG.CACHE.KEY) || {};
     c[k] = {
@@ -118,228 +101,491 @@
     };
     Lampa.Storage.set(allQUALITY_CONFIG.CACHE.KEY, c);
   }
-  function pick(str, re) {
-    var m = re.exec(str);
-    return m ? m[1] || m[0] : "";
-  }
-  function translateQuality(code, title) {
-    var s = (title || "").toLowerCase(),
-      res = pick(s, /(2160p|4k|4к|1080p|720p|480p)/i),
-      src = pick(
-        s,
-        /(web-dl|webrip|web-dlrip|bluray|bdremux|bdrip|hdtv|hdrip|dvdrip|camrip|telesync|telecine|ts)/i
-      ),
-      out = "";
-    if (res) out += MAP[res] || res.toUpperCase();
-    if (src) out += (out ? " " : "") + (MAP[src] || src.toUpperCase());
-    if (!out && code) out = String(code);
-    return out || title || "";
-  }
-  function fetchWithTimeout(url, ms) {
-    return new Promise(function (r, j) {
-      var t = false,
-        tm = setTimeout(function () {
-          t = true;
-          j(new Error("timeout"));
-        }, ms);
-      fetch(url).then(
-        function (resp) {
-          if (t) return;
-          clearTimeout(tm);
-          if (!resp.ok) j(new Error("status " + resp.status));
-          else resp.text().then(r, j);
-        },
-        function (e) {
-          if (t) return;
-          clearTimeout(tm);
-          j(e);
-        }
-      );
-    });
-  }
-  function fetchViaProxies(rawUrl, cardId) {
-    var i = 0;
 
-    function buildProxyUrl(proxy, url) {
-      var encodedUrl = encodeURIComponent(url);
-      
-      if (proxy.includes('?')) {
-        return proxy + encodedUrl;
-      } else if (proxy.endsWith('/')) {
-        return proxy + url;
+  function translateQuality(title) {
+    if (!title) return "";
+    
+    var s = title.toLowerCase();
+    
+    // Ищем разрешение
+    var resolution = "";
+    if (/2160p|4k|4к/.test(s)) resolution = "4K";
+    else if (/1080p/.test(s)) resolution = "1080";
+    else if (/720p/.test(s)) resolution = "720";
+    else if (/480p/.test(s)) resolution = "SD";
+    
+    // Ищем источник (от лучшего к худшему)
+    var source = "";
+    if (/blu-?ray|bd(?:re)?mux|bdrip|brrip|remux|bd(?:$|\s)|blurayrip|blueray/i.test(s)) {
+        source = "BluRay";
+    } else if (/(?:web-?dl|webdl)(?:rip)?|dlrip|itunes(?:hd)?|amazonhd|netflixhd|disney[+-]?hd?/i.test(s)) {
+        source = "Web-DL";
+    } else if (/web-?rip|webrip|streamrip|hulu|maxrip|apple tv|atvp/i.test(s)) {
+        source = "WEBRip";
+    } else if (/hdtv|pdtv|dsr|satrip|dttv|dth|dvb|tvrip|episode/i.test(s)) {
+        source = "HDTV";
+    } else if (/dvd(?:rip)?|dvd(?:$|\s)|dvdr|dvd5|dvd9|dvd-full|customdvd|retail dvd/i.test(s)) {
+        source = "DVD";
+    } else if (/vhsrip|tvrip|tv-?rip|camrip|telecine|ts|telesync|wp|workprint|scr(?:eener)?|dvdscr|bdscr|webscr|r5|rc/i.test(s)) {
+        source = "Low Quality";
+    }
+    
+    // Собираем результат
+    var result = "";
+    if (resolution && source) result = resolution + " " + source;
+    else if (resolution) result = resolution;
+    else if (source) result = source;
+    else {
+      var words = title.split(/[\/,]/)[0].trim().split(/\s+/);
+      if (words.length > 3) {
+        result = words.slice(0, 3).join(' ');
       } else {
-        return proxy + '?' + encodedUrl;
+        result = title;
       }
     }
+    
+    return result;
+  }
 
-    function tryNext() {
-      if (i >= allQUALITY_CONFIG.JACRED.PROXY_LIST.length) {
+  // Улучшенная функция fetch с повторными попытками
+  function fetchWithRetry(url, options = {}, retries = 3, backoff = 300) {
+    return new Promise((resolve, reject) => {
+      const attempt = (n) => {
+        fetch(url, options)
+          .then(resolve)
+          .catch((error) => {
+            if (n === 1) {
+              reject(error);
+            } else {
+              setTimeout(() => attempt(n - 1), backoff);
+            }
+          });
+      };
+      attempt(retries);
+    });
+  }
 
+  function fetchWithTimeout(url, ms) {
+    return new Promise(function (resolve, reject) {
+      var timeout = setTimeout(function () {
+        reject(new Error("timeout"));
+      }, ms);
+      
+      fetchWithRetry(url, {}, 2, 500)
+        .then(function(resp) {
+          clearTimeout(timeout);
+          if (!resp.ok) reject(new Error("status " + resp.status));
+          else resp.text().then(resolve).catch(reject);
+        })
+        .catch(function(e) {
+          clearTimeout(timeout);
+          reject(e);
+        });
+    });
+  }
+
+  function buildProxyUrl(proxy, url) {
+    if (proxy.includes('?')) {
+      return proxy + encodeURIComponent(url);
+    } else if (proxy.endsWith('/')) {
+      return proxy + url;
+    } else {
+      return proxy + '?' + encodeURIComponent(url);
+    }
+  }
+
+  // Улучшенная функция для работы с прокси
+  function fetchViaProxies(rawUrl) {
+    var proxies = [...allQUALITY_CONFIG.JACRED.PROXY_LIST];
+    var customProxy = localStorage.getItem("customJacredProxy");
+    
+    // Добавляем кастомный прокси в начало списка если есть
+    if (customProxy && customProxy.trim()) {
+      proxies.unshift(customProxy);
+    }
+    
+    // Пробуем сначала без прокси (иногда работает)
+    var directAttempt = fetchWithTimeout(rawUrl, 8000)
+      .then(function(response) {
+        if (allQUALITY_CONFIG.LOGGING.GENERAL) {
+          console.log("Direct connection success!");
+        }
+        return response;
+      })
+      .catch(function(error) {
+        if (allQUALITY_CONFIG.LOGGING.GENERAL) {
+          console.log("Direct connection failed:", error.message);
+        }
+        throw error; // Продолжаем к прокси
+      });
+
+    function tryProxy(index) {
+      if (index >= proxies.length) {
         return Promise.reject(new Error("all proxies failed"));
       }
 
-      var proxy = allQUALITY_CONFIG.JACRED.PROXY_LIST[i++];
+      var proxy = proxies[index];
       var proxUrl = buildProxyUrl(proxy, rawUrl);
 
-
+      if (allQUALITY_CONFIG.LOGGING.GENERAL) {
+        console.log("Trying proxy [" + (index + 1) + "/" + proxies.length + "]:", proxy);
+      }
 
       return fetchWithTimeout(proxUrl, allQUALITY_CONFIG.JACRED.TIMEOUT_MS)
         .then(function(response) {
+          if (allQUALITY_CONFIG.LOGGING.GENERAL) {
+            console.log("Success with proxy:", proxy);
+          }
           return response;
         })
         .catch(function(error) {
-
-          return tryNext();
+          if (allQUALITY_CONFIG.LOGGING.GENERAL) {
+            console.log("Proxy failed:", proxy, "Error:", error.message);
+          }
+          return tryProxy(index + 1);
         });
     }
 
-    return tryNext();
+    // Сначала пробуем прямое соединение, затем прокси
+    return directAttempt.catch(function() {
+      return tryProxy(0);
+    });
   }
 
-  function normalizeCard(c) {
-    return {
-      id: c.id,
-      title: c.title || c.name || "",
-      original_title: c.original_title || c.original_name || "",
-      type: getCardType(c),
-      release_date: c.release_date || c.first_air_date || "",
-    };
-  }
-
-  // ---- UI ----
-  function repositionQuality(view) {
-    if (!view) return;
-    var q = view.querySelector(".card__quality"),
-      m = view.querySelector(".card__marker");
-    if (q) q.style.bottom = m ? "2.7em" : "10px";
-  }
+  // ---- UI функции ----
   function setFullCardText(renderEl, text) {
     if (!renderEl) return;
-    var rate = $(".full-start-new__rate-line", renderEl);
-    if (!rate.length) return;
-    rate.css("visibility", "hidden");
-    var el = $(".full-start__status", renderEl);
-    if (el.length) el.text(text).removeClass("my-loading");
-    else
-      rate.append(
-        '<div class="full-start__status my-quality">' + text + "</div>"
-      );
-    rate.css("visibility", "visible");
+    var details = $(".full-start-new__details", renderEl);
+    if (!details.length) return;
+    
+    // Ищем элемент с текстом, начинающимся на "Качество: "
+    var qualitySpan = $("span", details).filter(function() {
+      return $(this).text().indexOf("Качество:") === 0;
+    });
+    
+    if (qualitySpan.length) {
+      // Создаем новый элемент с сохранением слова "Качество: "
+      var newSpan = $('<span class="my-quality">Качество: ' + text + '</span>');
+      
+      // Заменяем старый элемент
+      qualitySpan.replaceWith(newSpan);
+    } else {
+      // Если не нашли, добавляем в конец с разделителем
+      details.append('<span class="full-start-new__split">●</span>');
+      details.append('<span class="my-quality">Качество: ' + text + '</span>');
+    }
   }
-  function updateFullCardQuality(card, renderEl, qCode, label) {
-    setFullCardText(renderEl, translateQuality(qCode, label));
-  }
-  function updateListCardQuality(cardEl, qCode, label) {
+
+  function updateListCardQuality(cardEl, label) {
     var view = cardEl.querySelector(".card__view");
     if (!view) return;
-    var txt = translateQuality(qCode, label);
+    
+    var txt = translateQuality(label);
+    
     var olds = view.getElementsByClassName("card__quality");
-    while (olds.length) olds[0].parentNode.removeChild(olds[0]);
+    while (olds.length > 0) {
+      olds[0].parentNode.removeChild(olds[0]);
+    }
+    
     var div = document.createElement("div");
     div.className = "card__quality";
     div.innerHTML = "<div>" + txt + "</div>";
     view.appendChild(div);
-    repositionQuality(view);
+    
+    var marker = view.querySelector(".card__marker");
+    div.style.bottom = marker ? "2.7em" : "10px";
   }
 
-  // ---- Универсальный fetch+update ----
+  // ---- Основная логика ----
   function fetchAndUpdate(cardEl, card, isFull) {
     if (!cardEl || !card) return;
-    var type = getCardType(card),
-      key = allQUALITY_CONFIG.CACHE_VERSION + "_" + type + "_" + card.id,
-      override = allQUALITY_CONFIG.MANUAL_OVERRIDES[card.id];
+    
+    var type = getCardType(card);
+    var key = allQUALITY_CONFIG.CACHE_VERSION + "_" + type + "_" + card.id;
+    var override = allQUALITY_CONFIG.MANUAL_OVERRIDES[card.id];
+    
     if (override) {
-      isFull
-        ? updateFullCardQuality(card, cardEl, null, override.full_label)
-        : updateListCardQuality(cardEl, null, override.full_label);
+      if (isFull) {
+        setFullCardText(cardEl, override.full_label);
+      } else {
+        updateListCardQuality(cardEl, override.full_label);
+      }
       return;
     }
-    if (type === "tv" && !allQUALITY_CONFIG.DISPLAY.SHOW_QUALITY_FOR_TV_SERIES)
-      return;
+    
+    if (type === "tv" && !allQUALITY_CONFIG.DISPLAY.SHOW_QUALITY_FOR_TV_SERIES) return;
+    
     var cache = getCache(key);
     if (cache) {
-      isFull
-        ? updateFullCardQuality(
-            card,
-            cardEl,
-            cache.quality_code,
-            cache.full_label
-          )
-        : updateListCardQuality(cardEl, cache.quality_code, cache.full_label);
-      if (
-        Date.now() - cache.timestamp >
-        allQUALITY_CONFIG.CACHE.REFRESH_THRESHOLD_MS
-      ) {
-        getBestReleaseFromJacred(normalizeCard(card), card.id).then(function (res) {
-          if (!res || res.quality === "NO") return;
-          setCache(key, res);
-          isFull
-            ? updateFullCardQuality(card, cardEl, res.quality, res.full_label)
-            : updateListCardQuality(cardEl, res.quality, res.full_label);
+      if (isFull) {
+        setFullCardText(cardEl, translateQuality(cache.full_label));
+      } else {
+        updateListCardQuality(cardEl, cache.full_label);
+      }
+      
+      if (Date.now() - cache.timestamp > allQUALITY_CONFIG.CACHE.REFRESH_THRESHOLD_MS) {
+        getBestReleaseFromJacred(card).then(function(res) {
+          if (res) {
+            setCache(key, res);
+            if (isFull) {
+              setFullCardText(cardEl, translateQuality(res.full_label));
+            } else {
+              updateListCardQuality(cardEl, res.full_label);
+            }
+          }
+        }).catch(function(error) {
+          // Игнорируем ошибки при фоновом обновлении
         });
       }
       return;
     }
-    if (isFull) setFullCardText(cardEl, "Загрузка...");
-    getBestReleaseFromJacred(normalizeCard(card), card.id).then(function (res) {
-      if (!res || res.quality === "NO") return;
-      setCache(key, res);
-      isFull
-        ? updateFullCardQuality(card, cardEl, res.quality, res.full_label)
-        : updateListCardQuality(cardEl, res.quality, res.full_label);
+    
+    if (isFull) {
+      setFullCardText(cardEl, "Загрузка...");
+    }
+    
+    getBestReleaseFromJacred(card).then(function(res) {
+      if (res) {
+        setCache(key, res);
+        if (isFull) {
+          setFullCardText(cardEl, translateQuality(res.full_label));
+        } else {
+          updateListCardQuality(cardEl, res.full_label);
+        }
+      } else if (isFull) {
+        setFullCardText(cardEl, "Не найдено");
+      }
+    }).catch(function(error) {
+      if (allQUALITY_CONFIG.LOGGING.GENERAL) {
+        console.log("Error fetching quality for card:", card.title, error);
+      }
+      if (isFull) {
+        setFullCardText(cardEl, "Ошибка загрузки");
+      }
     });
+  }
+
+  function getBestReleaseFromJacred(card) {
+    if (!card || (!card.original_title && !card.title)) {
+      return Promise.resolve(null);
+    }
+
+    var year = (card.release_date || card.first_air_date || "").slice(0, 4);
+    if (!year || year === "undefined") {
+      return Promise.resolve(null);
+    }
+
+    var uid = Lampa.Storage.get("lampac_unic_id", "") || "";
+    
+    function buildUrl(query, exact) {
+      var normalizedQuery = query.replace(/[^\w\sа-яА-ЯёЁ\-]/gi, '').trim();
+      if (!normalizedQuery) return null;
+      
+      var url = allQUALITY_CONFIG.JACRED.PROTOCOL + 
+                allQUALITY_CONFIG.JACRED.HOST + 
+                allQUALITY_CONFIG.JACRED.API_PATH +
+                "?search=" + encodeURIComponent(normalizedQuery) +
+                "&year=" + year +
+                (exact ? "&exact=true" : "") +
+                (uid ? "&uid=" + uid : "");
+      return url;
+    }
+    
+    var strategies = [];
+    if (card.original_title && card.original_title.trim()) {
+      var url1 = buildUrl(card.original_title, true);
+      if (url1) strategies.push({
+        title: card.original_title,
+        exact: true,
+        name: "original exact",
+        url: url1
+      });
+      var url3 = buildUrl(card.original_title, false);
+      if (url3) strategies.push({
+        title: card.original_title,
+        exact: false,
+        name: "original fuzzy",
+        url: url3
+      });
+    }
+    if (card.title && card.title.trim() && card.title !== card.original_title) {
+      var url2 = buildUrl(card.title, true);
+      if (url2) strategies.push({
+        title: card.title, 
+        exact: true, 
+        name: "title exact",
+        url: url2
+      });
+      var url4 = buildUrl(card.title, false);
+      if (url4) strategies.push({
+        title: card.title, 
+        exact: false, 
+        name: "title fuzzy",
+        url: url4
+      });
+    }
+    
+    if (strategies.length === 0) {
+      return Promise.resolve(null);
+    }
+    
+    function tryStrategy(idx) {
+      if (idx >= strategies.length) {
+        return Promise.resolve(null);
+      }
+      
+      var st = strategies[idx];
+      
+      if (allQUALITY_CONFIG.LOGGING.GENERAL) {
+        console.log("JacRed request:", st.name, st.url);
+      }
+      
+      return fetchViaProxies(st.url).then(
+        function(txt) {
+          var arr;
+          try {
+            arr = JSON.parse(txt);
+          } catch (e) {
+            console.log("JSON parse error:", e, "Response:", txt);
+            arr = [];
+          }
+          
+          if (!arr || !arr.length || !Array.isArray(arr)) {
+            return tryStrategy(idx + 1);
+          }
+          
+          var best = null;
+          var bestQ = -1;
+          var searchYear = parseInt(year, 10);
+          
+          for (var k = 0; k < arr.length; k++) {
+            var t = arr[k];
+            if (!t || !t.title) continue;
+            
+            var ttl = t.title.toLowerCase();
+            var q = t.quality || 0;
+            
+            if (!q) {
+              if (/2160p|4k/.test(ttl)) q = 2160;
+              else if (/1080p/.test(ttl)) q = 1080;
+              else if (/720p/.test(ttl)) q = 720;
+              else if (/480p/.test(ttl)) q = 480;
+              else if (/telesync|ts/.test(ttl)) q = 1;
+              else if (/camrip|камрип/.test(ttl)) q = 2;
+              else q = 0;
+            }
+            
+            if (!q) continue;
+            
+            var ty = parseInt(t.relased, 10);
+            if (!ty || isNaN(ty) || ty < 1900) {
+              var m = t.title.match(/(^|[^\d])(\d{4})([^\d]|$)/);
+              ty = m ? parseInt(m[2], 10) : 0;
+            }
+            
+            if (ty && ty !== searchYear) continue;
+            
+            if (q > bestQ || (q === bestQ && t.title && best && t.title.length > best.title.length)) {
+              bestQ = q;
+              best = t;
+            }
+          }
+          
+          if (best) {
+            if (allQUALITY_CONFIG.LOGGING.QUALITY) {
+              console.log("Found quality for", card.title, ":", best.title, "quality:", bestQ);
+            }
+            return { quality_code: bestQ, full_label: best.title };
+          }
+          
+          return tryStrategy(idx + 1);
+        },
+        function(error) {
+          if (allQUALITY_CONFIG.LOGGING.GENERAL) {
+            console.log("Strategy failed:", st.name, error);
+          }
+          return tryStrategy(idx + 1);
+        }
+      );
+    }
+    
+    return tryStrategy(0);
   }
 
   // ---- Обработчики карточек ----
-  function handleFullCard(card, renderEl) {
-    fetchAndUpdate(renderEl, card, true);
-  }
   function handleListCard(cardEl) {
     if (!cardEl || cardEl.hasAttribute("data-my-quality-processed")) return;
     cardEl.setAttribute("data-my-quality-processed", "true");
-    fetchAndUpdate(cardEl, cardEl.card_data, false);
+    
+    if (cardEl.card_data) {
+      fetchAndUpdate(cardEl, cardEl.card_data, false);
+    }
   }
+
   function handleCardReposition(cardEl) {
     var view = cardEl.querySelector(".card__view");
     if (!view) return;
-    repositionQuality(view);
-    var mo = new MutationObserver(function (muts) {
-      muts.forEach(function (m) {
-        if (m.type === "childList" || m.type === "attributes")
-          repositionQuality(view);
-      });
-    });
-    mo.observe(view, { attributes: true, childList: true, subtree: true });
+    
+    var qualityEl = view.querySelector(".card__quality");
+    if (qualityEl) {
+      var marker = view.querySelector(".card__marker");
+      qualityEl.style.bottom = marker ? "2.7em" : "10px";
+    }
   }
 
-  // ---- MutationObserver для всех новых карточек ----
-  var observer = new MutationObserver(function (muts) {
-    muts.forEach(function (m) {
-      Array.prototype.forEach.call(m.addedNodes, function (node) {
-        if (node.nodeType !== 1) return;
-        if (node.classList && node.classList.contains("card")) {
-          handleListCard(node);
-          handleCardReposition(node);
-        }
-        if (node.querySelectorAll) {
-          Array.prototype.forEach.call(
-            node.querySelectorAll(".card"),
-            function (c) {
-              handleListCard(c);
-              handleCardReposition(c);
+  // ---- Инициализация ----
+  function init() {
+    if (window.lampaQualityPlugin) return;
+    window.lampaQualityPlugin = true;
+    
+    var cards = document.querySelectorAll(".card");
+    for (var i = 0; i < cards.length; i++) {
+      handleListCard(cards[i]);
+      handleCardReposition(cards[i]);
+    }
+    
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        for (var i = 0; i < mutation.addedNodes.length; i++) {
+          var node = mutation.addedNodes[i];
+          if (node.nodeType === 1) {
+            if (node.classList && node.classList.contains("card")) {
+              handleListCard(node);
+              handleCardReposition(node);
             }
-          );
+            
+            if (node.querySelectorAll) {
+              var childCards = node.querySelectorAll(".card");
+              for (var j = 0; j < childCards.length; j++) {
+                handleListCard(childCards[j]);
+                handleCardReposition(childCards[j]);
+              }
+            }
+          }
         }
       });
     });
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
+    
+    observer.observe(document.body, { childList: true, subtree: true });
+    
+    Lampa.Listener.follow("full", function(e) {
+      if (e.type === "complite" && e.data && e.data.movie) {
+        var renderEl = e.object && e.object.activity && e.object.activity.render ? 
+                       e.object.activity.render() : null;
+        if (renderEl) {
+          fetchAndUpdate(renderEl, e.data.movie, true);
+        }
+      }
+    });
+  }
+
+  // ---- НАСТРОЙКИ ----
   function setupQualitySettings() {
     Lampa.SettingsApi.addComponent({
       component: "quality_settings",
       name: "Качество на постерах",
-       icon: '<img src="data:image/png;base64,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" alt="video-call">',
-     });
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M18 7c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3.5l4 4v-11l-4 4V7zm-8 8c0-.55-.45-1-1-1H6c-.55 0-1 .45-1 1s.45 1 1 1h3c.55 0 1-.45 1-1zm4 0c0-.55-.45-1-1-1h-3c-.55 0-1 .45-1 1s.45 1 1 1h3c.55 0 1-.45 1-1zm4 0c0-.55-.45-1-1-1h-3c-.55 0-1 .45-1 1s.45 1 1 1h3c.55 0 1-.45 1-1z"/></svg>',
+    });
 
     // Ввод своего прокси
     Lampa.SettingsApi.addParam({
@@ -353,26 +599,15 @@
       },
       field: {
         name: "Добавить свой прокси",
-        description:
-          "Добавьте свой CORS-прокси (начинается с http/https) для jacred.xyz. JacRed нужен для отображения качества на постерах. Добавленный CORS-прокси станет первым в списке бесплатных,",
+        description: "Добавьте свой CORS-прокси для jacred.xyz. Этот прокси будет использоваться первым.",
       },
       onChange: function (value) {
         if (value && typeof value === "string") {
           localStorage.setItem("customJacredProxy", value);
-
-          // добавляем в список PROXY_LIST динамически
-          if (allQUALITY_CONFIG && allQUALITY_CONFIG.JACRED) {
-            // убираем старый кастомный
-            allQUALITY_CONFIG.JACRED.PROXY_LIST =
-              allQUALITY_CONFIG.JACRED.PROXY_LIST.filter(function (p) {
-                return p !== localStorage.getItem("customJacredProxy");
-              });
-
-            // добавляем новый в начало списка
-            allQUALITY_CONFIG.JACRED.PROXY_LIST.unshift(value);
-          }
-
           Lampa.Noty.show("Добавлен свой прокси: " + value);
+        } else {
+          localStorage.removeItem("customJacredProxy");
+          Lampa.Noty.show("Прокси удален");
         }
       },
     });
@@ -391,17 +626,25 @@
       },
       onChange: function () {
         localStorage.removeItem("customJacredProxy");
-        if (allQUALITY_CONFIG && allQUALITY_CONFIG.JACRED) {
-          // можно восстановить дефолтные без кастомного
-          allQUALITY_CONFIG.JACRED.PROXY_LIST = [
-            "https://corsproxy.io/?",
-            "https://api.allorigins.win/raw?url=",
-            "https://yacdn.org/proxy/",
-            "https://cors-anywhere.herokuapp.com/",
-            "https://thingproxy.freeboard.io/fetch/",
-          ];
-        }
         Lampa.Noty.show("Свой прокси сброшен");
+      },
+    });
+
+    // Настройка отображения качества для сериалов
+    Lampa.SettingsApi.addParam({
+      component: "quality_settings",
+      param: {
+        name: "show_tv_quality",
+        type: "toggle",
+        value: allQUALITY_CONFIG.DISPLAY.SHOW_QUALITY_FOR_TV_SERIES,
+      },
+      field: {
+        name: "Показывать качество для сериалов",
+        description: "Включите, чтобы отображать качество для сериалов",
+      },
+      onChange: function (value) {
+        allQUALITY_CONFIG.DISPLAY.SHOW_QUALITY_FOR_TV_SERIES = value;
+        Lampa.Noty.show("Настройка сохранена");
       },
     });
 
@@ -421,152 +664,82 @@
         testAllProxies();
       },
     });
+
+    // Кнопка очистки кэша
+    Lampa.SettingsApi.addParam({
+      component: "quality_settings",
+      param: {
+        name: "clear_cache",
+        type: "button",
+        default: false,
+      },
+      field: {
+        name: "Очистить кэш качества",
+        description: "Удалить все сохраненные данные о качестве",
+      },
+      onChange: function() {
+        Lampa.Storage.set(allQUALITY_CONFIG.CACHE.KEY, {});
+        Lampa.Noty.show("Кэш качества очищен");
+      },
+    });
   }
 
   function testAllProxies() {
     var testUrl = "https://jacred.xyz/api/v1.0/torrents?search=test&year=2020";
+    var workingProxies = 0;
+    var testedProxies = 0;
+    var totalProxies = allQUALITY_CONFIG.JACRED.PROXY_LIST.length;
     
-    allQUALITY_CONFIG.JACRED.PROXY_LIST.forEach(function(proxy, index) {
-      var proxiedUrl = proxy + (proxy.includes('?') ? encodeURIComponent(testUrl) : testUrl);
+    if (localStorage.getItem("customJacredProxy")) {
+      totalProxies++;
+    }
+    
+    Lampa.Noty.show("Тестируем " + totalProxies + " прокси...");
+    
+    function testProxy(proxy, index) {
+      var proxiedUrl = buildProxyUrl(proxy, testUrl);
       
-      fetchWithTimeout(proxiedUrl, 5000)
+      return fetchWithTimeout(proxiedUrl, 8000)
         .then(function() {
-          Lampa.Noty.show("Прокси " + (index + 1) + " работает");
+          workingProxies++;
+          Lampa.Noty.show("✓ Прокси " + (index + 1) + " работает: " + proxy);
+          return true;
         })
-        .catch(function() {
-          Lampa.Noty.show("Прокси " + (index + 1) + " не работает", 5000);
+        .catch(function(error) {
+          Lampa.Noty.show("✗ Прокси " + (index + 1) + " не работает: " + proxy, 3000);
+          return false;
+        })
+        .finally(function() {
+          testedProxies++;
+          if (testedProxies === totalProxies) {
+            setTimeout(function() {
+              Lampa.Noty.show("Тестирование завершено. Работает: " + workingProxies + " из " + totalProxies + " прокси");
+            }, 500);
+          }
         });
+    }
+    
+    var customProxy = localStorage.getItem("customJacredProxy");
+    
+    // Тестируем кастомный прокси первым
+    if (customProxy) {
+      testProxy(customProxy, 0);
+    }
+    
+    // Тестируем остальные прокси
+    allQUALITY_CONFIG.JACRED.PROXY_LIST.forEach(function(proxy, index) {
+      testProxy(proxy, customProxy ? index + 1 : index);
     });
   }
 
-  // ---- Инициализация ----
-  function init() {
-    if (window.lampaQualityPlugin) return;
-    window.lampaQualityPlugin = true;
-    Array.prototype.forEach.call(
-      document.querySelectorAll(".card"),
-      function (c) {
-        handleListCard(c);
-        handleCardReposition(c);
-      }
-    );
-    Lampa.Listener.follow("full", function (e) {
-      if (e.type === "complite" && e && e.data && e.data.movie) {
-        var renderEl =
-          e.object && e.object.activity && e.object.activity.render
-            ? e.object.activity.render()
-            : null;
-
-        handleFullCard(e.data.movie, renderEl);
-      }
+  // Запускаем
+  if (window.Lampa) {
+    init();
+    setupQualitySettings();
+  } else {
+    document.addEventListener("lampaLoaded", function() {
+      init();
+      setupQualitySettings();
     });
-  }
-
-  init();
-  setupQualitySettings();
-
-  // ---- JacRed fetch ----
-  function getBestReleaseFromJacred(card, cardId) {
-    if (!allQUALITY_CONFIG.JACRED.URL) {
-
-      return Promise.resolve(null);
-    }
-    
-    var year = (card.release_date || "").slice(0, 4);
-    if (!year || isNaN(parseInt(year, 10))) {
-      return Promise.resolve(null);
-    }
-
-    // Проверяем, что есть что искать
-    if (!card.original_title && !card.title) {
-      return Promise.resolve(null);
-    }
-
-    var uid = Lampa.Storage.get("lampac_unic_id", "") || "";
-    
-    function buildUrl(q, exact) {
-      // Нормализация запроса - удаляем лишние символы
-      var normalizedQuery = q.replace(/[^\w\sа-яА-ЯёЁ\-]/gi, '').trim();
-      
-      return (
-        allQUALITY_CONFIG.JACRED.PROTOCOL +
-        allQUALITY_CONFIG.JACRED.URL +
-        "/api/v1.0/torrents?search=" +
-        encodeURIComponent(normalizedQuery) +
-        "&year=" +
-        encodeURIComponent(year) +
-        (exact ? "&exact=true" : "") +
-        (uid ? "&uid=" + encodeURIComponent(uid) : "")
-      );
-    }
-    
-    var strategies = [];
-    if ((card.original_title || "").replace(/\s+/g, "").length)
-      strategies.push({
-        title: card.original_title,
-        exact: true,
-        name: "original exact",
-      });
-    if ((card.title || "").replace(/\s+/g, "").length)
-      strategies.push({ title: card.title, exact: true, name: "title exact" });
-      
-    function tryStrategy(idx) {
-      if (idx >= strategies.length) return Promise.resolve(null);
-      var st = strategies[idx];
-      var url = buildUrl(st.title, st.exact);
-      return fetchViaProxies(url, cardId).then(
-        function (txt) {
-          var arr;
-          try {
-            arr = JSON.parse(txt);
-          } catch (e) {
-            arr = [];
-          }
-          if (!arr || !arr.length) return tryStrategy(idx + 1);
-          var best = null,
-            bestQ = -1,
-            searchYear = parseInt(year, 10);
-          for (var k = 0; k < arr.length; k++) {
-            var t = arr[k],
-              ttl = (t.title || "").toLowerCase(),
-              q = t.quality || 0;
-            if (!q) {
-              if (/2160p|4k/.test(ttl)) q = 2160;
-              else if (/1080p/.test(ttl)) q = 1080;
-              else if (/720p/.test(ttl)) q = 720;
-              else if (/480p/.test(ttl)) q = 480;
-              else if (/telesync|ts/.test(ttl)) q = 1;
-              else if (/camrip|камрип/.test(ttl)) q = 2;
-              else q = 0;
-            }
-            if (!q) continue;
-            var ty = parseInt(t.relased, 10);
-            if (!ty || isNaN(ty) || ty < 1900) {
-              var m = t.title && t.title.match(/(^|[^\d])(\d{4})([^\d]|$)/);
-              ty = m ? parseInt(m[2], 10) : 0;
-            }
-            if (ty && ty !== searchYear) continue;
-            if (
-              q > bestQ ||
-              (q === bestQ &&
-                t.title &&
-                best &&
-                t.title.length > best.title.length)
-            ) {
-              bestQ = q;
-              best = t;
-            }
-          }
-          if (best) {
-            return { quality: bestQ, full_label: best.title };
-          }
-          return tryStrategy(idx + 1);
-        },
-        function () {
-          return tryStrategy(idx + 1);
-        }
-      );
-    }
-    return tryStrategy(0);
   }
 })();
