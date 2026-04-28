@@ -10,7 +10,7 @@
     },
     JACRED: {
       PROTOCOL: "https://",
-      HOST: "jacred.xyz",
+      HOST: "jacred.stream",
       API_PATH: "/api/v1.0/torrents",
       PROXY_LIST: [
         "https://api.codetabs.com/v1/proxy?quest=",
@@ -599,7 +599,7 @@
       },
       field: {
         name: "Добавить свой прокси",
-        description: "Добавьте свой CORS-прокси для jacred.xyz. Этот прокси будет использоваться первым.",
+        description: "Добавьте свой CORS-прокси для jacred. Этот прокси будет использоваться первым.",
       },
       onChange: function (value) {
         if (value && typeof value === "string") {
@@ -685,7 +685,7 @@
   }
 
   function testAllProxies() {
-    var testUrl = "https://jacred.xyz/api/v1.0/torrents?search=test&year=2020";
+    var testUrl = "https://jacred.stream/api/v1.0/torrents?search=test&year=2020";
     var workingProxies = 0;
     var testedProxies = 0;
     var totalProxies = allQUALITY_CONFIG.JACRED.PROXY_LIST.length;
