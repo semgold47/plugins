@@ -10,7 +10,7 @@
     },
     JACRED: {
       PROTOCOL: "https://",
-      HOST: "jacred.stream",
+      HOST: "jac-red.ru",
       API_PATH: "/api/v1.0/torrents",
       PROXY_LIST: [
         "https://api.codetabs.com/v1/proxy?quest=",
@@ -685,7 +685,7 @@
   }
 
   function testAllProxies() {
-    var testUrl = "https://jacred.stream/api/v1.0/torrents?search=test&year=2020";
+    var testUrl = "https://jac-red.ru/api/v1.0/torrents?search=test&year=2020";
     var workingProxies = 0;
     var testedProxies = 0;
     var totalProxies = allQUALITY_CONFIG.JACRED.PROXY_LIST.length;
