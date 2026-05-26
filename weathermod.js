@@ -2,6 +2,7 @@
   "use strict";
   var DEFAULT_API_KEY = "62e890ca6e044d4b937144001251005";
   var WEATHER_CACHE_KEY = "weatherData";
+  
   var CACHE_EXPIRATION_MS = 21600000; // 6 часов
   var CACHE_REFRESH_MS = 1800000; // полчаса
   var FORECAST_HOURS = 10;
@@ -109,7 +110,7 @@
       }
 
       network.clear();
-      network.timeout(1500);
+      network.timeout(3500);
       network.silent(
         getWeatherUrl(city),
         function (weatherResponse) {
