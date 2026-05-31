@@ -34,58 +34,94 @@
     }
 
     // ---------- Ожидание и клик по эпизоду ----------
-    function waitForEpisodeListAndClick() {
-        const maxWait = 15000;
-        const started = Date.now();
+function waitForEpisodeListAndClick() {
+    const maxWait = 15000;
+    const started = Date.now();
 
-        function findEpisode() {
+    function findEpisode() {
 
-            const cards = document.querySelectorAll('.online-prestige--full');
+        const cards = document.querySelectorAll('.online-prestige--full');
 
-            if (!cards.length) {
-                if (Date.now() - started < maxWait) {
-                    return setTimeout(findEpisode, 300);
-                }
-                return;
+        if (!cards.length) {
+
+            if (Date.now() - started < maxWait) {
+                return setTimeout(findEpisode, 300);
             }
 
-            let target = null;
-            let bestProgress = -1;
-
-            cards.forEach(card => {
-
-                const line = card.querySelector('.time-line');
-
-                if (!line) return;
-
-                const hash = line.getAttribute('data-hash');
-
-                const timeline = Lampa.Storage.get('file_view', {});
-
-                const item = timeline[hash];
-
-                if (!item) return;
-
-                const progress =
-                    Number(item.time || 0) +
-                    Number(item.percent || 0);
-
-                if (progress > bestProgress) {
-                    bestProgress = progress;
-                    target = card;
-                }
-            });
-
-            if (target) {
-                $(target).trigger('hover:enter');
-                return;
-            }
-
-            console.warn('[Continue] Не найден просмотренный эпизод');
+            console.warn('[Continue] Список серий не найден');
+            return;
         }
 
-        setTimeout(findEpisode, 1000);
+        const timelineStore = Lampa.Storage.get('file_view', {});
+
+        let targetCard = null;
+        let targetEpisode = '?';
+
+        cards.forEach(card => {
+
+            const line = card.querySelector('.time-line');
+            if (!line) return;
+
+            const hash = line.getAttribute('data-hash');
+            if (!hash) return;
+
+            const progress = timelineStore[hash];
+            if (!progress) return;
+
+            const viewed =
+                Number(progress.time || 0) > 0 ||
+                Number(progress.percent || 0) > 0;
+
+            if (!viewed) return;
+
+            const epElement =
+                card.querySelector('.online-prestige__episode-number');
+
+            targetEpisode = epElement
+                ? epElement.textContent.trim()
+                : '?';
+
+            console.log(
+                '[Continue] найден просмотренный эпизод:',
+                targetEpisode,
+                progress
+            );
+
+            // ВАЖНО:
+            // просто запоминаем последний найденный
+            targetCard = card;
+        });
+
+        if (targetCard) {
+
+            console.log(
+                '[Continue] запускаем последний просмотренный эпизод:',
+                targetEpisode
+            );
+
+            $(targetCard).trigger('hover:enter');
+            return;
+        }
+
+        console.warn(
+            '[Continue] Не найдено серий с прогрессом'
+        );
+
+        const first = document.querySelector(
+            '.online-prestige--full'
+        );
+
+        if (first) {
+            console.log(
+                '[Continue] запускаем первую серию'
+            );
+
+            $(first).trigger('hover:enter');
+        }
     }
+
+    setTimeout(findEpisode, 1000);
+}
 
     // ---------- Пересборка навигации пульта ----------
     function rebuildLampaNavigation(container) {
