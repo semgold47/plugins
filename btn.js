@@ -35,76 +35,57 @@
 
     // ---------- Ожидание и клик по эпизоду ----------
     function waitForEpisodeListAndClick() {
-    const maxWait = 15000;
-    const started = Date.now();
+        const maxWait = 15000;
+        const started = Date.now();
 
-    function findEpisode() {
+        function findEpisode() {
 
-        const cards = document.querySelectorAll('.online-prestige--full');
+            const cards = document.querySelectorAll('.online-prestige--full');
 
-        if (!cards.length) {
-            if (Date.now() - started < maxWait) {
-                return setTimeout(findEpisode, 300);
+            if (!cards.length) {
+                if (Date.now() - started < maxWait) {
+                    return setTimeout(findEpisode, 300);
+                }
+                return;
             }
 
-            console.warn('[Continue] Список серий не найден');
-            return;
-        }
+            let target = null;
+            let bestProgress = -1;
 
-        const timelineStore = Lampa.Storage.get('file_view', {});
+            cards.forEach(card => {
 
-        let targetCard = null;
-        let targetEpisode = -1;
+                const line = card.querySelector('.time-line');
 
-        cards.forEach(card => {
+                if (!line) return;
 
-            const line = card.querySelector('.time-line');
-            if (!line) return;
+                const hash = line.getAttribute('data-hash');
 
-            const hash = line.getAttribute('data-hash');
-            if (!hash) return;
+                const timeline = Lampa.Storage.get('file_view', {});
 
-            const progress = timelineStore[hash];
-            if (!progress) return;
+                const item = timeline[hash];
 
-            const viewed =
-                Number(progress.time || 0) > 0 ||
-                Number(progress.percent || 0) > 0;
+                if (!item) return;
 
-            if (!viewed) return;
+                const progress =
+                    Number(item.time || 0) +
+                    Number(item.percent || 0);
 
-            const epElement = card.querySelector('.online-prestige__episode-number');
-            if (!epElement) return;
+                if (progress > bestProgress) {
+                    bestProgress = progress;
+                    target = card;
+                }
+            });
 
-            const epNum = parseInt(epElement.textContent.trim(), 10);
-
-            if (isNaN(epNum)) return;
-
-            if (epNum > targetEpisode) {
-                targetEpisode = epNum;
-                targetCard = card;
+            if (target) {
+                $(target).trigger('hover:enter');
+                return;
             }
-        });
 
-        if (targetCard) {
-
-            console.log(
-                '[Continue] Запуск последней просмотренной серии:',
-                targetEpisode
-            );
-
-            $(targetCard).trigger('hover:enter');
-            return;
+            console.warn('[Continue] Не найден просмотренный эпизод');
         }
 
-        console.warn('[Continue] Не найдено серий с прогрессом');
-
-        const first = document.querySelector('.online-prestige--full');
-        if (first) $(first).trigger('hover:enter');
+        setTimeout(findEpisode, 1000);
     }
-
-    setTimeout(findEpisode, 1000);
-}
 
     // ---------- Пересборка навигации пульта ----------
     function rebuildLampaNavigation(container) {
@@ -127,70 +108,70 @@
     }
 
     // ---------- Добавление кнопки в карточку ----------
-    function addContinueButton(event) {
-        const movie = event.data.movie || event.data.card || event.data || {};
-        const continueData = getContinueData(movie);
-        if (!continueData) return;
+function addContinueButton(event) {
+    const movie = event.data.movie || event.data.card || event.data || {};
+    const continueData = getContinueData(movie);
+    if (!continueData) return;
 
-        const render = event.object.activity.render();
-        const buttonsContainer = render.find('.full-start-new__buttons');
-        if (!buttonsContainer.length || buttonsContainer.find('.button--continue').length) return;
+    const render = event.object.activity.render();
+    const buttonsContainer = render.find('.full-start-new__buttons');
+    if (!buttonsContainer.length || buttonsContainer.find('.button--continue').length) return;
 
-        const label = buildLabel(continueData);
+    const label = buildLabel(continueData);
 
-        const button = $(`
-            <div class="full-start__button selector button--continue">
-                <svg viewBox="0 0 24 24" width="24" height="24">
-                    <path fill="currentColor" d="M8 5v14l11-7z"/>
-                </svg>
-                <span>${label}</span>
-            </div>
-        `);
+    const button = $(`
+        <div class="full-start__button selector button--continue">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+                <path fill="currentColor" d="M8 5v14l11-7z"/>
+            </svg>
+            <span>${label}</span>
+        </div>
+    `);
 
-        button.on('hover:enter', function () {
+    button.on('hover:enter', function () {
 
-        Lampa.Activity.push({
-            component: 'lampac',
-            source: continueData.balanser,
-            movie: movie
-        });
-
-        waitForEpisodeListAndClick();
+    Lampa.Activity.push({
+        component: 'lampac',
+        source: continueData.balanser,
+        movie: movie
     });
 
-        // Ждём, пока другие плагины добавят свои кнопки (YouTube, Rutube и т.д.)
-        setTimeout(() => {
-            const allButtons = buttonsContainer.children('.full-start__button');
-            const position = parseInt(Lampa.Storage.get(PLUGIN_NAME + '_position', '2'));
+    waitForEpisodeListAndClick();
+});
 
-            if (position === 1) {
-                // Первая позиция: вставляем в начало и делаем главной
-                buttonsContainer.prepend(button);
-                allButtons.removeClass('button--priority');
-                button.addClass('button--priority');
-                Lampa.Controller.collectionSet(buttonsContainer);
-                Lampa.Controller.collectionFocus(button[0]);
+    // Ждём, пока другие плагины добавят свои кнопки (YouTube, Rutube и т.д.)
+    setTimeout(() => {
+        const allButtons = buttonsContainer.children('.full-start__button');
+        const position = parseInt(Lampa.Storage.get(PLUGIN_NAME + '_position', '2'));
+
+        if (position === 1) {
+            // Первая позиция: вставляем в начало и делаем главной
+            buttonsContainer.prepend(button);
+            allButtons.removeClass('button--priority');
+            button.addClass('button--priority');
+            Lampa.Controller.collectionSet(buttonsContainer);
+            Lampa.Controller.collectionFocus(button[0]);
+        } else {
+            // Вставляем после кнопки с индексом (position - 2), т.е. position=2 → после первой
+            if (allButtons.length >= position - 1) {
+                button.insertAfter(allButtons.eq(position - 2));
             } else {
-                // Вставляем после кнопки с индексом (position - 2), т.е. position=2 → после первой
-                if (allButtons.length >= position - 1) {
-                    button.insertAfter(allButtons.eq(position - 2));
-                } else {
-                    buttonsContainer.append(button);
-                }
-                Lampa.Controller.collectionSet(buttonsContainer);
-                
-                // Фокус на первую кнопку, если нет приоритетной
-                let focusTarget = buttonsContainer.find('.button--priority').first();
-                if (!focusTarget.length) {
-                    focusTarget = buttonsContainer.children('.full-start__button').first();
-                    focusTarget.addClass('button--priority');
-                }
-                if (focusTarget.length) {
-                    Lampa.Controller.collectionFocus(focusTarget[0]);
-                }
+                buttonsContainer.append(button);
             }
-        }, 200); // даём время остальным плагинам
-    }
+            Lampa.Controller.collectionSet(buttonsContainer);
+            
+            // Фокус на первую кнопку, если нет приоритетной
+            let focusTarget = buttonsContainer.find('.button--priority').first();
+            if (!focusTarget.length) {
+                focusTarget = buttonsContainer.children('.full-start__button').first();
+                focusTarget.addClass('button--priority');
+            }
+            if (focusTarget.length) {
+                Lampa.Controller.collectionFocus(focusTarget[0]);
+            }
+        }
+    }, 200); // даём время остальным плагинам
+}
 
     function registerSettings() {
         if (typeof Lampa === 'undefined' || !Lampa.SettingsApi) return;
@@ -204,7 +185,7 @@
         Lampa.SettingsApi.addParam({
             component: PLUGIN_NAME,
             param: { name: PLUGIN_NAME + '_position', type: 'select', values: ['1','2','3','4','5','6','7','8','9','10'], default: '2' },
-            field: { name: 'Позиция кнопки', description: '1 — (делает кнопку последней), 2 — первой 3 - второй и т.д.))))' }
+            field: { name: 'Позиция кнопки', description: '1 — (делает кнопку последней), 2 — первой 3 - второйи т.д.))))' }
         });
         Lampa.SettingsApi.addParam({
             component: PLUGIN_NAME,
